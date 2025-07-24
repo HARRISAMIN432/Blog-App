@@ -6,8 +6,6 @@ const { connectDB } = require("./config/database.js");
 const error = require("./middlewares/error");
 const adminRoute = require("./routes/adminRoute");
 
-// Connect to the database
-
 dotenv.config();
 
 const app = express();
@@ -21,3 +19,5 @@ app.listen(process.env.PORT, () => {
 });
 
 app.use("/api/admin", adminRoute);
+app.use("/api/blog", require("./routes/blogRoute"));
+app.use(error);

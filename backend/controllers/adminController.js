@@ -9,7 +9,7 @@ exports.adminLogin = async (req, res, next) => {
   }
 
   if (
-    !email !== process.env.ADMIN_EMAIL ||
+    email !== process.env.ADMIN_EMAIL ||
     password !== process.env.ADMIN_PASSWORD
   )
     return next(new ErrorHandler("Invalid email or password", 401));
