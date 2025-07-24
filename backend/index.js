@@ -1,12 +1,14 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
-const cookieParser = require("cookie-parser");
 const { connectDB } = require("./config/database.js");
 const error = require("./middlewares/error");
-const adminRoute = require("./routes/adminRoute");
 
 dotenv.config();
+
+const adminRoute = require("./routes/adminRoute.js");
+const commentsRoute = require("./routes/commentsRoute.js");
+const blogRoute = require("./routes/blogRoute.js");
 
 const app = express();
 app.use(cors());
@@ -19,5 +21,6 @@ app.listen(process.env.PORT, () => {
 });
 
 app.use("/api/admin", adminRoute);
-app.use("/api/blog", require("./routes/blogRoute"));
+app.use("/api/blog", blogRoute);
+app.use("/api/comments", commentsRoute);
 app.use(error);

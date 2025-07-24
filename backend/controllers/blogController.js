@@ -2,7 +2,7 @@ const Blog = require("../models/blog");
 const ErrorHandler = require("../utils/errorHandler");
 const fs = require("fs");
 const imagekit = require("../config/imagekit");
-const { format } = require("path");
+const Comment = require("../models/Comment");
 
 exports.addBlog = async (req, res, next) => {
   const { title, subtitle, description, category, isPublished } = JSON.parse(
@@ -46,6 +46,7 @@ exports.deleteBlog = async (req, res, next) => {
   const { id } = req.body;
   const blog = await Blog.findByIdAndDelete(id);
   if (!blog) return next(new ErrorHandler("Blog not found", 404));
+  await Comment.deleteMany({ blog: id });
   res.status(200).json({
     success: true,
     message: "Blog deleted successfully",
