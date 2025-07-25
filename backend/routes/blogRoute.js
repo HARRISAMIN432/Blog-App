@@ -21,6 +21,6 @@ router.get("/popular-searches", getPopularSearches);
 router.get("/:id", getBlogById);
 router.post("/add", auth, upload.single("image"), addBlog);
 router.delete("/delete", auth, deleteBlog);
-router.patch("/toggle-publish", auth, togglePublish);
+router.post("/toggle-publish", auth, togglePublish);
 
 module.exports = router;

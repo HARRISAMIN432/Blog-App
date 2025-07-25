@@ -19,7 +19,7 @@ router.post("/generate-blog", async (req, res) => {
                   text: `Write a detailed blog post on: ${topic}. 
                         Use HTML formatting only. 
                         Use <strong> instead of asterisks for bold text. 
-                        Do not use Markdown or asterisks. Dont write any additional text like html at the top 
+                        Do not use Markdown or asterisks. Dont write \`\`\`html in the start additional and no empty line in the start text like html at the top 
                         and no \` symbol`,
                 },
               ],
