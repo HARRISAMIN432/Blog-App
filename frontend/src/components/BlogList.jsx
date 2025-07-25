@@ -12,7 +12,6 @@ const BlogList = ({ searchQuery = "", searchCategory = "All" }) => {
   const [pagination, setPagination] = useState({});
   const [isSearching, setIsSearching] = useState(false);
 
-  // Debounce search to avoid too many API calls
   const debounce = (func, delay) => {
     let timeoutId;
     return (...args) => {
@@ -69,7 +68,6 @@ const BlogList = ({ searchQuery = "", searchCategory = "All" }) => {
     }
   };
 
-  // Debounced search function
   const debouncedSearch = useCallback(
     debounce((query, category) => {
       if (query && query.trim()) {
@@ -226,7 +224,6 @@ const BlogList = ({ searchQuery = "", searchCategory = "All" }) => {
           >
             Previous
           </button>
-
           <span className="text-gray-600">
             Page {pagination.currentPage} of {pagination.totalPages}
           </span>

@@ -10,6 +10,7 @@ import ListBlog from "./pages/Admin/ListBlog";
 import Login from "./components/Admin/Login";
 import "quill/dist/quill.snow.css";
 import { useSelector } from "react-redux";
+import Subscribers from "./pages/Admin/Subscribers";
 
 const App = () => {
   const isSigned = useSelector((state) => state.admin.isSigned);
@@ -21,6 +22,7 @@ const App = () => {
         <Route path="admin" element={isSigned ? <Layout /> : <Login />}>
           <Route path="login" element={<Login />} />
           <Route index element={<Dashboard />} />
+          <Route path="subscribers" element={<Subscribers />} />
           <Route path="addBlog" element={<AddBlog />} />
           <Route path="comments" element={<Comments />} />
           <Route path="listBlog" element={<ListBlog />} />

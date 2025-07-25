@@ -12,6 +12,7 @@ const AddBlog = () => {
   const [subtitle, setSubtitle] = useState("");
   const [published, setPublished] = useState(false);
   const [error, setError] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const submitHandler = async (e) => {
     const blogDescription = quillRef.current.root.innerHTML;
@@ -45,7 +46,30 @@ const AddBlog = () => {
     }
   };
 
-  const generateContent = async () => {};
+  const generateContent = async () => {
+    setIsGenerating(true);
+    try {
+      const res = await fetch("/api/ai/generate-blog", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topic: title }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        quillRef.current.root.innerHTML = data.content;
+      } else {
+        setError("Failed to generate blog content.");
+      }
+    } catch (err) {
+      setError("Error generating blog.");
+    }
+    setIsGenerating(false);
+  };
+
+  useEffect(() => {
+    if (isGenerating === true)
+      quillRef.current.root.innerHTML = "Generating...";
+  });
 
   useEffect(() => {
     if (!quillRef.current && editorRef.current) {

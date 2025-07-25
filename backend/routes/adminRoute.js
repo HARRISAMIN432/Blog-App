@@ -5,6 +5,7 @@ const {
   deleteCommentById,
   approveCommentByID,
   getDashboard,
+  getSubscribers,
 } = require("../controllers/adminController");
 const { catchAsyncErrors } = require("../utils/catchAsyncErrors");
 const { getAllBlogs } = require("../controllers/blogController");
@@ -18,5 +19,6 @@ router.get("/blogs", auth, catchAsyncErrors(getAllBlogs));
 router.post("/delete-comment", auth, catchAsyncErrors(deleteCommentById));
 router.post("/approve-comment", auth, catchAsyncErrors(approveCommentByID));
 router.get("/dashboard", auth, catchAsyncErrors(getDashboard));
+router.get("/subscribers", auth, catchAsyncErrors(getSubscribers));
 
 module.exports = router;

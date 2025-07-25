@@ -1,6 +1,7 @@
 const ErrorHandler = require("../utils/errorHandler");
 const jwt = require("jsonwebtoken");
 const Blog = require("../models/blog.js");
+const Subscriber = require("../models/subscribe.js");
 const Comment = require("../models/Comment.js");
 
 exports.adminLogin = async (req, res, next) => {
@@ -21,6 +22,13 @@ exports.adminLogin = async (req, res, next) => {
   res.status(200).json({
     success: true,
     token,
+  });
+};
+
+exports.adminLogout = async (req, res, next) => {
+  res.status(200).json({
+    success: true,
+    message: "Admin logged out successfully",
   });
 };
 
@@ -79,4 +87,9 @@ exports.approveCommentByID = async (req, res, next) => {
     message: "Comment Approved",
     success: true,
   });
+};
+
+exports.getSubscribers = async (req, res, next) => {
+  const subscribers = await Subscriber.find().sort({ subscribedAt: -1 });
+  res.status(200).json({ success: true, subscribers });
 };
