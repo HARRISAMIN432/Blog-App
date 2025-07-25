@@ -1,11 +1,32 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { login } from "../../redux/adminSlice";
 
 const Login = () => {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        localStorage.setItem("token", data.token);
+        dispatch(login());
+      } else {
+        alert(data.message || "Invalid credentials");
+      }
+    } catch (err) {
+      alert("Network error. Try again later.");
+    }
   };
 
   return (
@@ -39,7 +60,7 @@ const Login = () => {
                 <input
                   onChange={(e) => setPassword(e.target.value)}
                   value={password}
-                  type="email"
+                  type="password"
                   required
                   placeholder="your password"
                   className="border-b-2 border-gray-300 placeholder:text-gray-300 p-2 outline-none mb-6"

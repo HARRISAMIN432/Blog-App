@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { assets, blog_data, comments_data } from "../assets/assets";
+import { assets } from "../assets/assets";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Moment from "moment";
@@ -12,22 +12,66 @@ const Blog = () => {
   const [comments, setComments] = useState([]);
   const [name, setName] = useState("");
   const [content, setContent] = useState("");
+  const [error, setError] = useState("");
+
   const fetchBlogData = async () => {
-    const data = blog_data.find((item) => item._id === id);
-    setData(data);
+    try {
+      const res = await fetch(`/api/blog/${id}`);
+      const data = await res.json();
+      if (data.success === true) setData(data.blog);
+      else setError(data.message || "Something went wrong.");
+    } catch (err) {
+      setError("Network error. Try again later.");
+    }
   };
 
   const fetchComments = async () => {
-    setComments(comments_data);
+    try {
+      const res = await fetch(`/api/comments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ blogId: id }),
+      });
+      const data = await res.json();
+      if (data.success === true) setComments(data.comments);
+      else setError(data.message || "Something went wrong.");
+    } catch (err) {
+      setError("Network error. Try again later.");
+    }
   };
 
   useEffect(() => {
     fetchBlogData();
     fetchComments();
-  });
+  }, [id]);
 
   const addComment = async (e) => {
     e.preventDefault();
+    try {
+      const res = await fetch(`/api/comments/add-comment`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          blog: id,
+          name,
+          content,
+        }),
+      });
+      const data = await res.json();
+      if (data.success === true) {
+        setName("");
+        setContent("");
+        fetchComments();
+      } else {
+        setError(data.message || "Failed to add comment.");
+      }
+    } catch (err) {
+      setError("Network error. Try again later.");
+    }
   };
 
   return data ? (
@@ -46,9 +90,6 @@ const Blog = () => {
           {data.title}
         </h1>
         <h2 className="my-5 max-w-lg truncate mx-auto">{data.subTitle}</h2>
-        <p className="inline-block py-1 px-4 rounded-full mb-6 border text-sm border-primary/35 bg-primary/5 font-medium text-primary">
-          Michael Brown
-        </p>
       </div>
       <div className="mx-5 max-w-5xl md:mx-auto my-6 mt-6">
         <img src={data.image} alt="" className="rounded-3xl mb-5" />
@@ -115,6 +156,7 @@ const Blog = () => {
           </div>
         </div>
       </div>
+      {error && <p className="text-red-500 text-sm">{error}</p>}
       <Footer />
     </div>
   ) : (

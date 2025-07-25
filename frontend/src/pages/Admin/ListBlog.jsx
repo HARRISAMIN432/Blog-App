@@ -1,12 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { blog_data } from "../../assets/assets";
 import BlogTableItem from "../../components/Admin/BlogTableItem";
 
 const ListBlog = () => {
   const [blogs, setBlogs] = useState([]);
 
   const fetchBlogs = async () => {
-    setBlogs(blog_data);
+    try {
+      const res = await fetch(`/api/admin/blogs`, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+      const data = await res.json();
+      setBlogs(data.blogs);
+    } catch (e) {
+      console.log("Error");
+    }
   };
 
   useEffect(() => {

@@ -9,14 +9,17 @@ import Comments from "./pages/Admin/Comments";
 import ListBlog from "./pages/Admin/ListBlog";
 import Login from "./components/Admin/Login";
 import "quill/dist/quill.snow.css";
+import { useSelector } from "react-redux";
 
 const App = () => {
+  const isSigned = useSelector((state) => state.admin.isSigned);
   return (
     <div>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/blog/:id" element={<Blog />} />
-        <Route path="admin" element={true ? <Layout /> : <Login />}>
+        <Route path="admin" element={isSigned ? <Layout /> : <Login />}>
+          <Route path="login" element={<Login />} />
           <Route index element={<Dashboard />} />
           <Route path="addBlog" element={<AddBlog />} />
           <Route path="comments" element={<Comments />} />

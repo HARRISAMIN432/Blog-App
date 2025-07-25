@@ -8,6 +8,6 @@ const {
 const router = express.Router();
 
 router.post("/add-comment", catchAsyncErrors(addComment));
-router.get("/", catchAsyncErrors(getBlogComments));
+router.post("/", catchAsyncErrors(getBlogComments));
 
 module.exports = router;

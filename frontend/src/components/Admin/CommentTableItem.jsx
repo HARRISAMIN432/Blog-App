@@ -1,9 +1,48 @@
-import React from "react";
+import React, { useState } from "react";
 import { assets } from "../../assets/assets";
 
 const CommentTableItem = ({ comment, fetchComments }) => {
   const { blog, createdAt, _id } = comment;
+  const [error, setError] = useState("");
   const BlogDate = new Date(createdAt);
+
+  const deleteComment = async () => {
+    try {
+      const res = await fetch(`/api/admin/delete-comment`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token"),
+        },
+        body: JSON.stringify({ id: _id }),
+      });
+      const data = await res.json();
+      if (!data.success) setError(data.message);
+    } catch (e) {
+      setError("Network Error");
+    }
+    fetchComments();
+  };
+
+  const handleApproval = async () => {
+    try {
+      const res = await fetch(`/api/admin/approve-comment`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token"),
+        },
+        body: JSON.stringify({ id: _id }),
+      });
+      const data = await res.json();
+      console.log(data);
+      if (!data.success) setError(data.message);
+    } catch (e) {
+      console.log(e);
+    }
+    fetchComments();
+  };
+
   return (
     <tr className="order-y border-gray-300">
       <td className="px-6 py-4">
@@ -21,6 +60,7 @@ const CommentTableItem = ({ comment, fetchComments }) => {
         <div className="inline-flex items-center gap-4">
           {!comment.isApproved ? (
             <img
+              onClick={handleApproval}
               src={assets.tick_icon}
               className="w-5 hover:scale-110 transition-all cursor-pointer"
             />
@@ -31,6 +71,7 @@ const CommentTableItem = ({ comment, fetchComments }) => {
           )}
           <img
             src={assets.bin_icon}
+            onClick={deleteComment}
             alt=""
             className="w-5 hover:scale-110 transition-all cursor-pointer"
           />

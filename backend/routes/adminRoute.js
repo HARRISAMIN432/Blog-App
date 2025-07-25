@@ -16,7 +16,7 @@ router.post("/login", catchAsyncErrors(adminLogin));
 router.get("/comments", auth, catchAsyncErrors(getAllComments));
 router.get("/blogs", auth, catchAsyncErrors(getAllBlogs));
 router.post("/delete-comment", auth, catchAsyncErrors(deleteCommentById));
-router.get("/approve-comment", auth, catchAsyncErrors(approveCommentByID));
+router.post("/approve-comment", auth, catchAsyncErrors(approveCommentByID));
 router.get("/dashboard", auth, catchAsyncErrors(getDashboard));
 
 module.exports = router;

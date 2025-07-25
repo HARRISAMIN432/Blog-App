@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { comments_data } from "../../assets/assets";
 import CommentTableItem from "../../components/Admin/CommentTableItem";
 
 const Comments = () => {
@@ -7,7 +6,17 @@ const Comments = () => {
   const [filter, setFilter] = useState("Not Approaved");
 
   const fetchComments = async () => {
-    setComments(comments_data);
+    try {
+      const res = await fetch(`/api/admin/comments`, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+      const data = await res.json();
+      setComments(data.comments);
+    } catch (e) {
+      console.log("Error");
+    }
   };
 
   useEffect(() => {

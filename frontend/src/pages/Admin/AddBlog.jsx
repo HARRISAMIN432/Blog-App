@@ -11,9 +11,38 @@ const AddBlog = () => {
   const [category, setCategory] = useState("Startup");
   const [subtitle, setSubtitle] = useState("");
   const [published, setPublished] = useState(false);
+  const [error, setError] = useState("");
 
   const submitHandler = async (e) => {
-    e.preventDefault();
+    const blogDescription = quillRef.current.root.innerHTML;
+    const blogObject = {
+      title,
+      subtitle,
+      description: blogDescription,
+      category,
+      isPublished: published,
+    };
+    if (!category || category === "Select Category" || category === "") {
+      setError("Please select a valid blog category.");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("blog", JSON.stringify(blogObject));
+    formData.append("image", image);
+    try {
+      const res = await fetch("/api/blog/add", {
+        method: "POST",
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success === false)
+        setError(data.message || "Failed to add blog.");
+    } catch (err) {
+      setError("Something went wrong while uploading the blog.");
+    }
   };
 
   const generateContent = async () => {};
@@ -25,7 +54,10 @@ const AddBlog = () => {
   }, []);
 
   return (
-    <form className="flex-1 bg-blue-50/50 text-gray-600 h-full overflow-scroll">
+    <form
+      onSubmit={submitHandler}
+      className="flex-1 bg-blue-50/50 text-gray-600 h-full overflow-scroll"
+    >
       <div className="bg-white w-full max-w-3xl p-4 md:p-10 sm:m-10 shadow rounded">
         <p>Upload thumbnail</p>
         <label htmlFor="image">
@@ -51,7 +83,7 @@ const AddBlog = () => {
           onChange={(e) => setTitle(e.target.value)}
           value={title}
         />
-        <p className="mt-4">Blog title</p>
+        <p className="mt-4">Blog subtitle</p>
         <input
           type="text"
           placeholder="Type here"
@@ -74,10 +106,9 @@ const AddBlog = () => {
         <p className="mt-4">Blog Category</p>
         <select
           name="category"
-          onChange={() => setCategory(e.target.value)}
+          onChange={(e) => setCategory(e.target.value)}
           className="mt-2 px-3 py-2 border text-gray-500 border-gray-300 outline-none rounded"
         >
-          <option value="">Select Category</option>
           {blogCategories.map((blog, index) => {
             return (
               <option key={index} value={blog}>
@@ -102,6 +133,7 @@ const AddBlog = () => {
           Add Blog
         </button>
       </div>
+      {error && <p className="text-red-500 text-sm">{error}</p>}
     </form>
   );
 };

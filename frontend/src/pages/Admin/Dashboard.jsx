@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { assets, dashboard_data } from "../../assets/assets";
+import { assets } from "../../assets/assets";
 import BlogTableItem from "../../components/Admin/BlogTableItem";
 
 const Dashboard = () => {
@@ -11,7 +11,17 @@ const Dashboard = () => {
   });
 
   const fetchDashboard = async () => {
-    setDashboardData(dashboard_data);
+    try {
+      const data = await fetch(`/api/admin/dashboard`, {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      });
+      const res = await data.json();
+      setDashboardData(res.dashboardData);
+    } catch (e) {
+      console.log("Error");
+    }
   };
 
   useEffect(() => {

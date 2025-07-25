@@ -71,7 +71,7 @@ exports.deleteCommentById = async (req, res, next) => {
 
 exports.approveCommentByID = async (req, res, next) => {
   const { id } = req.body;
-  const c = Comment.findByIdAndUpdate(id, {
+  const c = await Comment.findByIdAndUpdate(id, {
     isApproved: true,
   });
   if (!c) return next(new ErrorHandler("Comment not found", 403));
