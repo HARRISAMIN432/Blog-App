@@ -6,19 +6,18 @@ import Footer from "../components/Footer";
 import Moment from "moment";
 import Loader from "../components/Loader";
 import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
 
 const Blog = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [comments, setComments] = useState([]);
-  const [name, setName] = useState("");
   const username = useSelector((state) => state.user.username);
   const isSigned = useSelector((state) => state.admin.isSigned);
   const [content, setContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
 
   const fetchBlogData = async () => {
     try {
@@ -55,27 +54,26 @@ const Blog = () => {
 
   const addComment = async (e) => {
     e.preventDefault();
-    isLoading(true);
+    setIsLoading(true);
     if (!username && !isSigned) {
-      navigate("/login");
+      setError("You need to sign in to comment");
       return;
     }
-    const commenterName = username || "Admin";
     try {
       const res = await fetch(`/api/comments/add-comment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: localStorage.getItem("token"),
         },
         body: JSON.stringify({
           blog: id,
-          name: commenterName,
           content,
         }),
       });
       const data = await res.json();
       if (data.success === true) {
-        setName("");
+        setMessage("Your comment has been sent for approval");
         setContent("");
         fetchComments();
       } else {
@@ -84,7 +82,7 @@ const Blog = () => {
     } catch (err) {
       setError("Network error. Try again later.");
     }
-    isLoading(false);
+    setIsLoading(false);
   };
 
   return data ? (
@@ -128,7 +126,15 @@ const Blog = () => {
               >
                 <div className="flex items-center gap-2 mb-2">
                   <img src={assets.user_icon} alt="" className="w-6" />
-                  <p className="font-medium">{item.name}</p>
+                  <p className="font-medium flex items-center gap-1">
+                    {item.userId?.name || (
+                      <>
+                        <span className="bg-primary text-white text-xs px-2 py-0.5 rounded-full">
+                          Admin
+                        </span>
+                      </>
+                    )}
+                  </p>
                 </div>
                 <p className="text-sm max-w-wd ml-8">{item.content}</p>
                 <div className="absolute right-4 bottom-3 flex items-center gap-2 text-xs">
@@ -150,12 +156,17 @@ const Blog = () => {
               value={content}
               className="w-full placeholder:text-gray-300 p-2 border border-gray-300 rounded outline-none h-48"
             ></textarea>
-            <button type="submit" disabled={isLoading || !content.trim()}>
+            <button
+              className="w-full py-3 font-medium bg-primary text-white rounded cursor-pointer hover:bg-primary/90 transition-all"
+              type="submit"
+              disabled={isLoading}
+            >
               {isLoading ? "Submitting..." : "Submit"}
             </button>
           </form>
         </div>
         <div>
+          <p className="text-green-300">{message}</p>
           <p className="font-semibold my-4">
             Share this article on social media
           </p>

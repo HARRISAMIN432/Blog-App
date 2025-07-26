@@ -1,10 +1,7 @@
 const ErrorHandler = require("../utils/errorHandler");
-const jwt = require("jsonwebtoken");
 const Blog = require("../models/blog.js");
-const User = require("../models/User.js");
 const Subscriber = require("../models/subscribe.js");
 const Comment = require("../models/Comment.js");
-const bcrypt = require("bcrypt");
 
 exports.getAllBlogsAdmin = async (req, res, next) => {
   const blogs = await Blog.find({}).sort({ createdAt: -1 });
@@ -17,6 +14,7 @@ exports.getAllBlogsAdmin = async (req, res, next) => {
 exports.getAllComments = async (req, res, next) => {
   const comments = await Comment.find({})
     .populate("blog")
+    .populate("userId", "name")
     .sort({ createdAt: -1 });
   res.status(200).json({
     success: true,
