@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 router.post("/generate-blog", async (req, res) => {
-  const { topic } = req.body;
+  const { topic, subtitle } = req.body;
   try {
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_KEY}`,
@@ -16,7 +16,7 @@ router.post("/generate-blog", async (req, res) => {
             {
               parts: [
                 {
-                  text: `Write a detailed blog post on: ${topic}. 
+                  text: `Write a detailed blog post on: ${topic} and subtopic: ${subtitle}. 
                         Use HTML formatting only. 
                         Use <strong> instead of asterisks for bold text. 
                         Do not use Markdown or asterisks. Dont write \`\`\`html in the start additional and no empty line in the start text like html at the top 

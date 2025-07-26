@@ -9,16 +9,47 @@ const {
 } = require("../controllers/adminController");
 const { catchAsyncErrors } = require("../utils/catchAsyncErrors");
 const { getAllBlogs } = require("../controllers/blogController");
-const auth = require("../middlewares/auth");
+const { auth } = require("../middlewares/auth");
+const { authorizeRoles } = require("../middlewares/auth");
 
 const router = express.Router();
 
 router.post("/login", catchAsyncErrors(adminLogin));
-router.get("/comments", auth, catchAsyncErrors(getAllComments));
-router.get("/blogs", auth, catchAsyncErrors(getAllBlogs));
-router.post("/delete-comment", auth, catchAsyncErrors(deleteCommentById));
-router.post("/approve-comment", auth, catchAsyncErrors(approveCommentByID));
-router.get("/dashboard", auth, catchAsyncErrors(getDashboard));
-router.get("/subscribers", auth, catchAsyncErrors(getSubscribers));
+router.get(
+  "/comments",
+  auth,
+  authorizeRoles("admin"),
+  catchAsyncErrors(getAllComments)
+);
+router.get(
+  "/blogs",
+  auth,
+  authorizeRoles("admin"),
+  catchAsyncErrors(getAllBlogs)
+);
+router.post(
+  "/delete-comment",
+  auth,
+  authorizeRoles("admin"),
+  catchAsyncErrors(deleteCommentById)
+);
+router.post(
+  "/approve-comment",
+  auth,
+  authorizeRoles("admin"),
+  catchAsyncErrors(approveCommentByID)
+);
+router.get(
+  "/dashboard",
+  auth,
+  authorizeRoles("admin"),
+  catchAsyncErrors(getDashboard)
+);
+router.get(
+  "/subscribers",
+  auth,
+  authorizeRoles("admin"),
+  catchAsyncErrors(getSubscribers)
+);
 
 module.exports = router;

@@ -1,16 +1,20 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { login } from "../../redux/adminSlice";
+import { login } from "../redux/adminSlice";
+import { userLogin } from "../redux/userSlice";
+import { Link, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 const Login = () => {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
+  const navigate = useNavigate();
   const [password, setPassword] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("/api/admin/login", {
+      const res = await fetch("/api/user/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -19,8 +23,17 @@ const Login = () => {
       });
       const data = await res.json();
       if (data.success) {
-        localStorage.setItem("token", data.token);
-        dispatch(login());
+        const token = data.token;
+        localStorage.setItem("token", token);
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        const role = payload.role || "user";
+        if (role === "admin") {
+          dispatch(login());
+          navigate("/");
+        } else {
+          dispatch(userLogin({ id: payload.id, username: data.username }));
+          navigate("/");
+        }
       } else {
         alert(data.message || "Invalid credentials");
       }
@@ -35,7 +48,7 @@ const Login = () => {
         <div className="flex flex-col items-center justify-center">
           <div className="w-full py-6 text-center">
             <h1 className="text-3xl font-bold">
-              <span className="text-primary">Admin</span> Login
+              <span className="text-primary">Login</span>
             </h1>
             <p className="font-light">
               Enter your credentials to access the admin panel
@@ -73,6 +86,13 @@ const Login = () => {
                 Login
               </button>
             </form>
+
+            <p className="mt-4 text-sm">
+              Don&apos;t have an account?{" "}
+              <Link to="/signup" className="text-primary hover:underline">
+                Sign up
+              </Link>
+            </p>
           </div>
         </div>
       </div>

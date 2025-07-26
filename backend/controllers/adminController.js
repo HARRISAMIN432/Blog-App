@@ -1,36 +1,10 @@
 const ErrorHandler = require("../utils/errorHandler");
 const jwt = require("jsonwebtoken");
 const Blog = require("../models/blog.js");
+const User = require("../models/User.js");
 const Subscriber = require("../models/subscribe.js");
 const Comment = require("../models/Comment.js");
-
-exports.adminLogin = async (req, res, next) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return next(new ErrorHandler("Please provide email and password", 400));
-  }
-
-  if (
-    email !== process.env.ADMIN_EMAIL ||
-    password !== process.env.ADMIN_PASSWORD
-  )
-    return next(new ErrorHandler("Invalid email or password", 401));
-  const token = jwt.sign({ id: process.env.ADMIN_ID }, process.env.JWT_SECRET, {
-    expiresIn: "1d",
-  });
-  res.status(200).json({
-    success: true,
-    token,
-  });
-};
-
-exports.adminLogout = async (req, res, next) => {
-  res.status(200).json({
-    success: true,
-    message: "Admin logged out successfully",
-  });
-};
+const bcrypt = require("bcrypt");
 
 exports.getAllBlogsAdmin = async (req, res, next) => {
   const blogs = await Blog.find({}).sort({ createdAt: -1 });

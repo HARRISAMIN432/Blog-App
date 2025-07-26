@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { assets } from "../assets/assets";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Moment from "moment";
 import Loader from "../components/Loader";
+import { useSelector } from "react-redux";
+import { Navigate } from "react-router-dom";
 
 const Blog = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [comments, setComments] = useState([]);
   const [name, setName] = useState("");
+  const username = useSelector((state) => state.user.username);
+  const isSigned = useSelector((state) => state.admin.isSigned);
   const [content, setContent] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   const fetchBlogData = async () => {
@@ -49,6 +55,12 @@ const Blog = () => {
 
   const addComment = async (e) => {
     e.preventDefault();
+    isLoading(true);
+    if (!username && !isSigned) {
+      navigate("/login");
+      return;
+    }
+    const commenterName = username || "Admin";
     try {
       const res = await fetch(`/api/comments/add-comment`, {
         method: "POST",
@@ -57,7 +69,7 @@ const Blog = () => {
         },
         body: JSON.stringify({
           blog: id,
-          name,
+          name: commenterName,
           content,
         }),
       });
@@ -72,6 +84,7 @@ const Blog = () => {
     } catch (err) {
       setError("Network error. Try again later.");
     }
+    isLoading(false);
   };
 
   return data ? (
@@ -90,9 +103,17 @@ const Blog = () => {
           {data.title}
         </h1>
         <h2 className="my-5 max-w-lg truncate mx-auto">{data.subTitle}</h2>
+        <p className="inline-block py-1 px-4 rounded-full mb-6 border text-sm border-primary/35 bg-primary/5 font-medium text-primary">
+          {data.user?.name ? data.user.name : "Admin"}
+        </p>
       </div>
       <div className="mx-5 max-w-5xl md:mx-auto my-6 mt-6">
-        <img src={data.image} alt="" className="rounded-3xl mb-5" />
+        <img
+          src={`${data.image}?tr=w-1200,h-600,fo-auto,q-90`}
+          alt="Blog Banner"
+          className="w-full max-h-[500px] object-cover rounded-3xl mb-10 mx-auto"
+        />
+
         <div
           className="rich-text max-w-3xl mx-auto"
           dangerouslySetInnerHTML={{ __html: data.description }}
@@ -123,25 +144,14 @@ const Blog = () => {
             onSubmit={addComment}
             className="flex flex-col items-start gap-4 max-w-lg"
           >
-            <input
-              type="text"
-              placeholder="Name"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="placeholder:text-gray-300 w-full p-2 border border-gray-300 rounded outline-none"
-            />
             <textarea
               placeholder="Comment"
               onChange={(e) => setContent(e.target.value)}
               value={content}
               className="w-full placeholder:text-gray-300 p-2 border border-gray-300 rounded outline-none h-48"
             ></textarea>
-            <button
-              type="Submit"
-              className="bg-primary text-white rounded px-8 hover-scale-102 transition-all cursor-pointer p-2"
-            >
-              Submit
+            <button type="submit" disabled={isLoading || !content.trim()}>
+              {isLoading ? "Submitting..." : "Submit"}
             </button>
           </form>
         </div>

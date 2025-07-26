@@ -1,28 +1,44 @@
 import React, { useEffect, useRef, useState } from "react";
 import { assets, blogCategories } from "../../assets/assets";
 import Quill from "quill";
+import Navbar from "../../components/Navbar";
+import { useSelector } from "react-redux";
 
 const AddBlog = () => {
   const editorRef = useRef(null);
   const quillRef = useRef(null);
-
+  let user = useSelector((state) => state.user.id);
   const [image, setImage] = useState(false);
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("Startup");
   const [subtitle, setSubtitle] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [published, setPublished] = useState(false);
   const [error, setError] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
   const submitHandler = async (e) => {
+    setIsLoading(true);
     const blogDescription = quillRef.current.root.innerHTML;
-    const blogObject = {
-      title,
-      subtitle,
-      description: blogDescription,
-      category,
-      isPublished: published,
-    };
+    let blogObject = {};
+    if (!user) {
+      blogObject = {
+        title,
+        subtitle,
+        description: blogDescription,
+        category,
+        isPublished: published,
+      };
+    } else {
+      blogObject = {
+        title,
+        subtitle,
+        description: blogDescription,
+        category,
+        isPublished: published,
+        user,
+      };
+    }
     if (!category || category === "Select Category" || category === "") {
       setError("Please select a valid blog category.");
       return;
@@ -44,6 +60,7 @@ const AddBlog = () => {
     } catch (err) {
       setError("Something went wrong while uploading the blog.");
     }
+    setIsLoading(true);
   };
 
   const generateContent = async () => {
@@ -52,11 +69,14 @@ const AddBlog = () => {
       const res = await fetch("/api/ai/generate-blog", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic: title }),
+        body: JSON.stringify({ topic: title, subtitle }),
       });
       const data = await res.json();
       if (data.success) {
-        quillRef.current.root.innerHTML = data.content;
+        let cleanedContent = data.content
+          .replace(/^```(?:html)?\s*|\s*```$/g, "")
+          .trim();
+        quillRef.current.root.innerHTML = cleanedContent;
       } else {
         setError("Failed to generate blog content.");
       }
@@ -80,9 +100,10 @@ const AddBlog = () => {
   return (
     <form
       onSubmit={submitHandler}
-      className="flex-1 bg-blue-50/50 text-gray-600 h-full overflow-scroll"
+      className="w-screen min-h-screen bg-blue-50/50 text-gray-600 overflow-y-auto"
     >
-      <div className="bg-white w-full max-w-3xl p-4 md:p-10 sm:m-10 shadow rounded">
+      <Navbar />
+      <div className="bg-white w-full max-w-4xl mx-auto my-10 p-6 sm:p-10 shadow rounded-lg">
         <p>Upload thumbnail</p>
         <label htmlFor="image">
           <img
@@ -122,9 +143,10 @@ const AddBlog = () => {
           <button
             type="button"
             onClick={() => generateContent()}
+            disabled={isGenerating}
             className="absolute bottom-1 right-2 ml-2 text-xs text-white bg-black/70 px-4 py-1.5 rounded hover:underline cursor:pointer"
           >
-            Generate with AI
+            {!isGenerating ? "Generate with AI" : "Generating"}
           </button>
         </div>
         <p className="mt-4">Blog Category</p>
@@ -153,8 +175,9 @@ const AddBlog = () => {
         <button
           className="mt-8 w-40 h-10 bg-primary text-white rounded cursor-pointer text-sm"
           type="submit"
+          disabled={isLoading}
         >
-          Add Blog
+          {!isLoading ? "Add Blog" : "Creating..."}
         </button>
       </div>
       {error && <p className="text-red-500 text-sm">{error}</p>}

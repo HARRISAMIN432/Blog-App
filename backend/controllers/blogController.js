@@ -5,9 +5,8 @@ const imagekit = require("../config/imagekit");
 const Comment = require("../models/Comment");
 
 exports.addBlog = async (req, res, next) => {
-  const { title, subtitle, description, category, isPublished } = JSON.parse(
-    req.body.blog
-  );
+  const { title, subtitle, description, category, isPublished, user } =
+    JSON.parse(req.body.blog);
   const imageFile = req.file;
   if (!title || !description || !category || !imageFile)
     return next(new ErrorHandler("Please fill all fields", 400));
@@ -18,14 +17,27 @@ exports.addBlog = async (req, res, next) => {
     folder: "/blogs",
   });
   const image = imagekitResponse.url;
-  const blog = await Blog.create({
-    title,
-    subtitle,
-    description,
-    category,
-    image,
-    isPublished: isPublished === true,
-  });
+  let blog = false;
+  if (!user) {
+    blog = await Blog.create({
+      title,
+      subtitle,
+      description,
+      category,
+      image,
+      isPublished: isPublished === true,
+    });
+  } else {
+    blog = await Blog.create({
+      title,
+      subtitle,
+      description,
+      category,
+      image,
+      user,
+      isPublished: isPublished === true,
+    });
+  }
   if (!blog) return next(new ErrorHandler("Blog creation failed", 500));
   res.status(201).json({
     success: true,
@@ -45,22 +57,19 @@ exports.getAllBlogs = async (req, res, next) => {
 exports.searchBlogs = async (req, res, next) => {
   try {
     const {
-      q, // search query
-      category, // filter by category
-      limit = 20, // limit results (default 20)
-      page = 1, // pagination
-      sort = "-createdAt", // sort order
+      q,
+      category,
+      limit = 20,
+      page = 1,
+      sort = "-createdAt",
     } = req.query;
 
-    // Build search query
     let searchQuery = {};
 
-    // Only show published blogs in search results
     searchQuery.isPublished = true;
 
-    // Text search across multiple fields
     if (q && q.trim()) {
-      const searchRegex = new RegExp(q.trim(), "i"); // case-insensitive regex
+      const searchRegex = new RegExp(q.trim(), "i");
       searchQuery.$or = [
         { title: searchRegex },
         { subtitle: searchRegex },
@@ -69,15 +78,12 @@ exports.searchBlogs = async (req, res, next) => {
       ];
     }
 
-    // Category filter
     if (category && category !== "All") {
       searchQuery.category = category;
     }
 
-    // Calculate pagination
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
-    // Execute search query
     const blogs = await Blog.find(searchQuery)
       .sort(sort)
       .limit(parseInt(limit))
@@ -86,11 +92,9 @@ exports.searchBlogs = async (req, res, next) => {
         "title subtitle description category image createdAt isPublished"
       );
 
-    // Get total count for pagination
     const totalBlogs = await Blog.countDocuments(searchQuery);
     const totalPages = Math.ceil(totalBlogs / parseInt(limit));
 
-    // If no blogs found
     if (!blogs || blogs.length === 0) {
       return res.status(200).json({
         success: true,
@@ -210,6 +214,11 @@ exports.deleteBlog = async (req, res, next) => {
 exports.getBlogById = async (req, res, next) => {
   const { id } = req.params;
   const blog = await Blog.findById(id);
+  if (blog.user)
+    await blog.populate({
+      path: "user",
+      select: "name",
+    });
   if (!blog) return next(new ErrorHandler("Blog not found", 404));
   res.status(200).json({
     success: true,

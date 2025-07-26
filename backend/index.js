@@ -11,6 +11,7 @@ const commentsRoute = require("./routes/commentsRoute.js");
 const blogRoute = require("./routes/blogRoute.js");
 const subscribeRoutes = require("./routes/subscribeRoute.js");
 const aiRoute = require("./routes/aiRoute");
+const userRoute = require("./routes/userRoute.js");
 
 const app = express();
 app.use(cors());
@@ -27,4 +28,5 @@ app.use("/api/blog", blogRoute);
 app.use("/api/comments", commentsRoute);
 app.use("/api/subscribe", subscribeRoutes);
 app.use("/api/ai", aiRoute);
+app.use("/api/user", userRoute);
 app.use(error);

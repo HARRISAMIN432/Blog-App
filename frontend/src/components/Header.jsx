@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { assets } from "../assets/assets";
+import { useNavigate } from "react-router-dom";
 
 const Header = ({ onSearch }) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -8,6 +9,7 @@ const Header = ({ onSearch }) => {
   const [popularSearches, setPopularSearches] = useState([]);
   const [loading, setLoading] = useState(false);
   const searchRef = useRef(null);
+  const navigate = useNavigate();
   const suggestionsRef = useRef(null);
 
   useEffect(() => {
@@ -120,15 +122,6 @@ const Header = ({ onSearch }) => {
     setShowSuggestions(false);
   };
 
-  const handleClearSearch = () => {
-    setSearchQuery("");
-    setSuggestions([]);
-    setShowSuggestions(false);
-    if (onSearch) {
-      onSearch("");
-    }
-  };
-
   return (
     <div className="mx-8 sm:mx-16 xl:mx-24 relative">
       <div className="text-center mt-20 mb-8">
@@ -182,6 +175,12 @@ const Header = ({ onSearch }) => {
               Search
             </button>
           </form>
+          <button
+            onClick={() => navigate("/addBlog")}
+            className="bg-primary cursor-pointer hover:scale-105 text-white px-6 py-2 mt-6 rounded-full shadow hover:bg-primary/90 transition-all"
+          >
+            Create Blog
+          </button>
 
           {showSuggestions && (
             <div

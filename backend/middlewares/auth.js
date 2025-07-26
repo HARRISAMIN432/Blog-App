@@ -1,13 +1,24 @@
 const jwt = require("jsonwebtoken");
 
-const auth = (req, res, next) => {
+exports.auth = (req, res, next) => {
   const token = req.headers.authorization;
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
   try {
-    jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
     next();
-  } catch (error) {
-    return res.status(401).json({ message: "Unauthorized", success: false });
+  } catch (err) {
+    return res.status(401).json({ message: "Invalid Token" });
   }
 };
 
-module.exports = auth;
+exports.authorizeRoles = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res
+        .status(403)
+        .json({ message: "Access denied: insufficient permissions" });
+    }
+    next();
+  };
+};

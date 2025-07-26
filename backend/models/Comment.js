@@ -7,7 +7,7 @@ const blogSchema = new mongoose.Schema(
       ref: "Blog",
       required: true,
     },
-    name: {
+    user: {
       type: String,
       required: true,
     },
