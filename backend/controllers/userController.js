@@ -1,5 +1,7 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/User.js");
+const Blog = require("../models/blog.js");
+const Comment = require("../models/Comment.js");
 const jwt = require("jsonwebtoken");
 const ErrorHandler = require("../utils/errorHandler.js");
 
@@ -54,7 +56,7 @@ exports.login = async (req, res, next) => {
 exports.logout = async (req, res, next) => {
   res.status(200).json({
     success: true,
-    message: "Admin logged out successfully",
+    message: "User logged out successfully",
   });
 };
 
@@ -86,5 +88,133 @@ exports.signup = async (req, res, next) => {
     });
   } catch (error) {
     return next(new ErrorHandler("Signup failed. Please try again.", 500));
+  }
+};
+
+exports.getUserBlogs = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const blogs = await Blog.find({ user: userId })
+      .sort({ createdAt: -1 })
+      .select(
+        "title subtitle description category image createdAt isPublished"
+      );
+
+    res.status(200).json({
+      success: true,
+      blogs,
+    });
+  } catch (error) {
+    return next(new ErrorHandler("Failed to fetch user blogs", 500));
+  }
+};
+
+exports.getUserComments = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const comments = await Comment.find({ userId })
+      .populate("blog", "title")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      comments,
+    });
+  } catch (error) {
+    return next(new ErrorHandler("Failed to fetch user comments", 500));
+  }
+};
+
+exports.updateProfile = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const { name, email } = req.body;
+
+    if (!name || !email) {
+      return next(new ErrorHandler("Please provide name and email", 400));
+    }
+
+    const existingUser = await User.findOne({
+      email,
+      _id: { $ne: userId },
+    });
+
+    if (existingUser || email === process.env.ADMIN_EMAIL) {
+      return next(new ErrorHandler("Email already exists", 409));
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { name, email },
+      { new: true, runValidators: true }
+    ).select("name email");
+
+    if (!updatedUser) {
+      return next(new ErrorHandler("User not found", 404));
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    return next(new ErrorHandler("Failed to update profile", 500));
+  }
+};
+
+exports.deleteUserBlog = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const { id } = req.body;
+
+    const blog = await Blog.findOne({ _id: id, user: userId });
+
+    if (!blog) {
+      return next(
+        new ErrorHandler(
+          "Blog not found or you don't have permission to delete it",
+          404
+        )
+      );
+    }
+
+    await Blog.findByIdAndDelete(id);
+
+    await Comment.deleteMany({ blog: id });
+
+    res.status(200).json({
+      success: true,
+      message: "Blog deleted successfully",
+    });
+  } catch (error) {
+    return next(new ErrorHandler("Failed to delete blog", 500));
+  }
+};
+
+exports.deleteUserComment = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const { id } = req.params;
+
+    const comment = await Comment.findOne({ _id: id, userId });
+
+    if (!comment) {
+      return next(
+        new ErrorHandler(
+          "Comment not found or you don't have permission to delete it",
+          404
+        )
+      );
+    }
+
+    await Comment.findByIdAndDelete(id);
+
+    res.status(200).json({
+      success: true,
+      message: "Comment deleted successfully",
+    });
+  } catch (error) {
+    return next(new ErrorHandler("Failed to delete comment", 500));
   }
 };

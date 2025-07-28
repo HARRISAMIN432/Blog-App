@@ -12,6 +12,7 @@ import "quill/dist/quill.snow.css";
 import { useSelector } from "react-redux";
 import Subscribers from "./pages/Admin/Subscribers";
 import SignUp from "./pages/SignUp.jsx";
+import Profile from "./pages/Profile.jsx";
 
 const App = () => {
   const isSigned = useSelector((state) => state.admin.isSigned);
@@ -23,6 +24,7 @@ const App = () => {
         <Route path="/blog/:id" element={<Blog />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/profile" element={id ? <Profile /> : <Login />} />
         <Route
           path="addBlog"
           element={id !== "" || isSigned ? <AddBlog /> : <Login />}
