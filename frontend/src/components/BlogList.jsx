@@ -42,7 +42,6 @@ const BlogList = ({ searchQuery = "", searchCategory = "All" }) => {
       setLoading(true);
       setIsSearching(true);
 
-      // Build search URL with parameters
       const params = new URLSearchParams();
       if (query && query.trim()) params.append("q", query.trim());
       if (category && category !== "All") params.append("category", category);
@@ -96,11 +95,10 @@ const BlogList = ({ searchQuery = "", searchCategory = "All" }) => {
       setIsSearching(false);
       setSearchResults([]);
       setPagination({});
-      setError(""); // Clear any search errors
+      setError("");
     }
   }, [searchQuery, menu, debouncedSearch]);
 
-  // Determine which blogs to display
   const displayBlogs =
     isSearching && searchQuery.trim()
       ? searchResults
@@ -108,12 +106,10 @@ const BlogList = ({ searchQuery = "", searchCategory = "All" }) => {
           menu === "All" ? true : blog.category === menu
         );
 
-  // Show "no results" message only when searching and no results found
   const showNoResults = !loading && displayBlogs.length === 0 && !error;
 
   return (
     <div>
-      {/* Search Results Info */}
       {isSearching && searchQuery && (
         <div className="text-center mb-6">
           <p className="text-gray-600">
@@ -132,8 +128,6 @@ const BlogList = ({ searchQuery = "", searchCategory = "All" }) => {
           )}
         </div>
       )}
-
-      {/* Category Filter */}
       <div className="flex justify-center gap-4 sm:gap-8 my-10 relative">
         {blogCategories.map((category) => (
           <div key={category} className="relative">
@@ -160,8 +154,6 @@ const BlogList = ({ searchQuery = "", searchCategory = "All" }) => {
           </div>
         ))}
       </div>
-
-      {/* Loading State */}
       {loading && (
         <div className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -170,15 +162,11 @@ const BlogList = ({ searchQuery = "", searchCategory = "All" }) => {
           </p>
         </div>
       )}
-
-      {/* Error Display */}
       {error && !loading && (
         <div className="text-center text-red-500 mb-6">
           <p>Error: {error}</p>
         </div>
       )}
-
-      {/* Blog Grid */}
       {!loading && (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8 mb-24 mx-8 sm:mx-16 xl:mx-40">
           {displayBlogs.length > 0
@@ -211,8 +199,6 @@ const BlogList = ({ searchQuery = "", searchCategory = "All" }) => {
               )}
         </div>
       )}
-
-      {/* Pagination for Search Results */}
       {isSearching && pagination.totalPages > 1 && (
         <div className="flex justify-center items-center gap-4 mb-16">
           <button

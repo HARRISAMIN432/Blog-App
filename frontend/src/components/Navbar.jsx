@@ -8,8 +8,8 @@ import { userLogout } from "../redux/userSlice";
 const Navbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const id = useSelector((state) => state.user.id);
+  const photo = useSelector((state) => state.user.photo);
   const isSigned = useSelector((state) => state.admin.isSigned);
 
   const handleAuthClick = () => {
@@ -33,7 +33,6 @@ const Navbar = () => {
       />
 
       <div className="flex items-center gap-4">
-        {/* ✅ Show Admin Panel only if admin */}
         {isSigned && (
           <button
             onClick={() => navigate("/admin")}
@@ -41,6 +40,15 @@ const Navbar = () => {
           >
             Admin Panel
           </button>
+        )}
+
+        {id && (
+          <img
+            src={photo || assets.user_icon}
+            alt="Profile"
+            className="w-10 h-10 object-cover rounded-full border hover:scale-105 transition-all"
+            onClick={() => navigate("/profile")}
+          />
         )}
 
         <button

@@ -134,29 +134,35 @@ exports.updateProfile = async (req, res, next) => {
       return next(new ErrorHandler("Please provide name and email", 400));
     }
 
-    const existingUser = await User.findOne({
-      email,
-      _id: { $ne: userId },
-    });
+    const currentUser = await User.findById(userId);
 
-    if (existingUser || email === process.env.ADMIN_EMAIL) {
-      return next(new ErrorHandler("Email already exists", 409));
-    }
-
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { name, email },
-      { new: true, runValidators: true }
-    ).select("name email");
-
-    if (!updatedUser) {
+    if (!currentUser) {
       return next(new ErrorHandler("User not found", 404));
     }
+
+    if (email !== currentUser.email) {
+      const existingUser = await User.findOne({
+        email,
+        _id: { $ne: userId },
+      });
+
+      if (existingUser || email === process.env.ADMIN_EMAIL) {
+        return next(new ErrorHandler("Email already exists", 409));
+      }
+    }
+
+    currentUser.name = name;
+    currentUser.email = email;
+
+    await currentUser.save();
 
     res.status(200).json({
       success: true,
       message: "Profile updated successfully",
-      user: updatedUser,
+      user: {
+        name: currentUser.name,
+        email: currentUser.email,
+      },
     });
   } catch (error) {
     return next(new ErrorHandler("Failed to update profile", 500));

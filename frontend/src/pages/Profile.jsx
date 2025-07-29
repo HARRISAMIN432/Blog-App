@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { assets } from "../assets/assets";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { userUpdate } from "../redux/userSlice";
 
 const Profile = () => {
   const user = useSelector((state) => state.user);
@@ -11,6 +12,7 @@ const Profile = () => {
   const [email, setEmail] = useState(user.email || "");
   const [blogs, setBlogs] = useState([]);
   const [comments, setComments] = useState([]);
+  const dispatch = useDispatch();
   const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
@@ -60,7 +62,7 @@ const Profile = () => {
       const data = await res.json();
       if (data.success) {
         alert("Profile updated successfully!");
-        // Update Redux store if needed
+        dispatch(userUpdate({ username: name }));
       } else {
         alert(data.message);
       }
@@ -129,7 +131,6 @@ const Profile = () => {
       <Navbar />
       <div className="min-h-screen bg-gray-50 pt-20">
         <div className="max-w-4xl mx-auto px-4 py-8">
-          {/* Header */}
           <div className="text-center mb-8">
             <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
               <img
@@ -144,7 +145,6 @@ const Profile = () => {
             <p className="text-gray-600">{user.email || email}</p>
           </div>
 
-          {/* Navigation Tabs */}
           <div className="flex justify-center mb-8">
             <div className="flex bg-white rounded-lg p-1 shadow-sm border">
               {[
@@ -172,9 +172,7 @@ const Profile = () => {
             </div>
           </div>
 
-          {/* Tab Content */}
           <div className="bg-white rounded-xl shadow-sm border">
-            {/* Profile Tab */}
             {activeTab === "profile" && (
               <div className="p-8">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
