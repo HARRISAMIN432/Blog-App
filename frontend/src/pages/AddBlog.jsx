@@ -18,6 +18,7 @@ const AddBlog = () => {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const submitHandler = async (e) => {
+    e.preventDefault();
     setIsLoading(true);
     const blogDescription = quillRef.current.root.innerHTML;
     let blogObject = {};
@@ -60,7 +61,7 @@ const AddBlog = () => {
     } catch (err) {
       setError("Something went wrong while uploading the blog.");
     }
-    setIsLoading(true);
+    setIsLoading(false);
   };
 
   const generateContent = async () => {

@@ -35,7 +35,7 @@ exports.addBlog = async (req, res, next) => {
       category,
       image,
       user,
-      isPublished: isPublished === true,
+      isPublished: isPublished === true || isPublished === "true",
     });
   }
   if (!blog) return next(new ErrorHandler("Blog creation failed", 500));
