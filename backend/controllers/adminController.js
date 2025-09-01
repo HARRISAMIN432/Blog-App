@@ -1,5 +1,5 @@
 const ErrorHandler = require("../utils/errorHandler");
-const Blog = require("../models/blog.js");
+const Blog = require("../models/Blog.js");
 const Subscriber = require("../models/subscribe.js");
 const Comment = require("../models/Comment.js");
 

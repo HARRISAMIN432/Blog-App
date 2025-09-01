@@ -1,4 +1,4 @@
-const Blog = require("../models/blog");
+const Blog = require("../models/Blog");
 const ErrorHandler = require("../utils/errorHandler");
 const fs = require("fs");
 const imagekit = require("../config/imagekit");

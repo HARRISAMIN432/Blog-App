@@ -19,10 +19,6 @@ app.use(express.json());
 
 connectDB();
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server is running on port ${process.env.PORT}`);
-});
-
 app.use("/api/admin", adminRoute);
 app.use("/api/blog", blogRoute);
 app.use("/api/comments", commentsRoute);
@@ -30,3 +26,11 @@ app.use("/api/subscribe", subscribeRoutes);
 app.use("/api/ai", aiRoute);
 app.use("/api/user", userRoute);
 app.use(error);
+
+if (process.env.NODE_ENV !== "production") {
+  app.listen(process.env.PORT, () => {
+    console.log(`Server is running on port ${process.env.PORT}`);
+  });
+}
+
+export default server;
