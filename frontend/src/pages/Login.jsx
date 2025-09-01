@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { login } from "../redux/adminSlice";
+import { login } from "../redux/AdminSlice";
 import { userLogin } from "../redux/userSlice";
 import { Link, useNavigate } from "react-router-dom";
 import { Navigate } from "react-router-dom";
