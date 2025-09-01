@@ -2,7 +2,7 @@ import React from "react";
 import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { logout as adminLogout } from "../redux/adminSlice";
+import { logout as adminLogout } from "../redux/AdminSlice";
 import { userLogout } from "../redux/userSlice";
 
 const Navbar = () => {
