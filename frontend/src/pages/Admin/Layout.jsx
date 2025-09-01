@@ -3,7 +3,7 @@ import { assets } from "../../assets/assets";
 import { Outlet, useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Admin/Sidebar";
 import { useDispatch } from "react-redux";
-import { logout } from "../../redux/adminSlice";
+import { logout } from "../../redux/AdminSlice";
 
 const Layout = () => {
   const navigate = useNavigate();
