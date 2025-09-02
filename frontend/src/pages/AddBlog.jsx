@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar";
 import { useSelector } from "react-redux";
 
 const AddBlog = () => {
+  console.log("Rendering AddBlog component");
   const editorRef = useRef(null);
   const quillRef = useRef(null);
   let user = useSelector((state) => state.user.id);
