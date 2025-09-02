@@ -18,6 +18,7 @@ const AddBlog = () => {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const submitHandler = async () => {
+    e.preventDefault();
     const run = async () => {
       setIsLoading(true);
       setError("");
