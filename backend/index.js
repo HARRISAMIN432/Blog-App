@@ -22,7 +22,7 @@ app.use(
 );
 app.use(express.json());
 
-await connectDB();
+connectDB();
 
 app.use("/api/admin", adminRoute);
 
