@@ -153,7 +153,6 @@ const AddBlog = () => {
             setError(data.message || "Failed to add blog.");
           } else {
             console.log("Blog added successfully");
-            // Optionally navigate after success
             navigate("/blogs");
           }
         } catch (err) {
@@ -178,6 +177,7 @@ const AddBlog = () => {
       console.log("submitHandler caught error");
       setIsLoading(false);
     }
+    console.error("submitHandler final block reached");
   };
 
   const generateContent = async () => {
@@ -211,7 +211,6 @@ const AddBlog = () => {
         setError("Failed to generate blog content.");
       }
     } catch (err) {
-      console.error("Generate content error:", err);
       setError("Error generating blog.");
     }
     setIsGenerating(false);
