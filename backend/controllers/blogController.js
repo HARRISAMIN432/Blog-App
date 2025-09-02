@@ -11,7 +11,6 @@ exports.addBlog = async (req, res, next) => {
     const { title, subtitle, description, category, isPublished, user } =
       JSON.parse(req.body.blog);
     console.log(req.blog);
-    const userId = user ? mongoose.Types.ObjectId(user) : undefined;
     const imageFile = req.file;
     if (!title || !description || !category || !imageFile) {
       return next(new ErrorHandler("Please fill all fields", 400));
@@ -29,7 +28,7 @@ exports.addBlog = async (req, res, next) => {
       description,
       category,
       image,
-      user: user || undefined,
+      user: user,
       isPublished: isPublished === true || isPublished === "true",
     });
     if (!blog) {

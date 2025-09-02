@@ -4,8 +4,10 @@ const User = require("../models/User");
 exports.auth = async (req, res, next) => {
   const token = req.headers.authorization;
   if (!token) return res.status(401).json({ message: "Unauthorized" });
+  console.log(token);
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log(decoded);
     if (decoded.role === "admin") {
       req.user = {
         _id: decoded.id,
@@ -21,6 +23,7 @@ exports.auth = async (req, res, next) => {
         role: "user",
       };
     }
+    console.log(req.user);
     next();
   } catch (err) {
     return res.status(401).json({ message: "Invalid Token" });
