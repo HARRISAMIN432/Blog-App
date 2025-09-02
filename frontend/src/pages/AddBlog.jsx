@@ -213,6 +213,7 @@ const AddBlog = () => {
           className="mt-8 w-40 h-10 bg-primary text-white rounded cursor-pointer text-sm"
           onClick={submitHandler}
           disabled={isLoading}
+          type="button"
         >
           {!isLoading ? "Add Blog" : "Creating..."}
         </button>
