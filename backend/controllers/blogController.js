@@ -3,7 +3,6 @@ const ErrorHandler = require("../utils/errorHandler");
 const fs = require("fs");
 const imagekit = require("../config/imagekit");
 const Comment = require("../models/Comment");
-const mongoose = require("mongoose");
 
 exports.addBlog = async (req, res, next) => {
   console.log("Sun be");

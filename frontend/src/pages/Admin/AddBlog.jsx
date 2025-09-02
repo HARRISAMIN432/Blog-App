@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 const AddBlog = () => {
   const editorRef = useRef(null);
   const quillRef = useRef(null);
-  let user = useSelector((state) => state.user.id);
+  const user = useSelector((state) => state.user.id);
   const [image, setImage] = useState(false);
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("Startup");
@@ -18,49 +18,60 @@ const AddBlog = () => {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const submitHandler = async (e) => {
+    e.preventDefault(); // Prevent default form submission
+    console.log("Form submission triggered");
     setIsLoading(true);
-    const blogDescription = quillRef.current.root.innerHTML;
-    let blogObject = {};
-    if (!user) {
-      blogObject = {
-        title,
-        subtitle,
-        description: blogDescription,
-        category,
-        isPublished: published,
-      };
-    } else {
-      blogObject = {
-        title,
-        subtitle,
-        description: blogDescription,
-        category,
-        isPublished: published,
-        user,
-      };
-    }
-    if (!category || category === "Select Category" || category === "") {
-      setError("Please select a valid blog category.");
-      return;
-    }
-    const formData = new FormData();
-    formData.append("blog", JSON.stringify(blogObject));
-    formData.append("image", image);
+    setError("");
+
     try {
+      if (!quillRef.current || !quillRef.current.root) {
+        throw new Error("Quill editor not initialized");
+      }
+      const blogDescription = quillRef.current.root.innerHTML;
+      let blogObject = {
+        title,
+        subtitle,
+        description: blogDescription,
+        category,
+        isPublished: published,
+        ...(user && { user }),
+      };
+
+      if (!category || category === "Select Category" || category === "") {
+        setError("Please select a valid blog category.");
+        setIsLoading(false);
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("blog", JSON.stringify(blogObject));
+      if (image) formData.append("image", image);
+
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/blog/add`, {
         method: "POST",
         headers: {
-          Authorization: localStorage.getItem("token"),
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: formData,
       });
       const data = await res.json();
-      if (data.success === false)
+      if (!data.success) {
         setError(data.message || "Failed to add blog.");
+      } else {
+        setTitle("");
+        setSubtitle("");
+        setCategory("Startup");
+        setImage(false);
+        setPublished(false);
+        quillRef.current.root.innerHTML = "";
+        console.log("Blog added successfully:", data);
+      }
     } catch (err) {
       setError("Something went wrong while uploading the blog.");
+      console.error("Error:", err);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const generateContent = async () => {
@@ -90,11 +101,13 @@ const AddBlog = () => {
   };
 
   useEffect(() => {
-    if (isGenerating === true)
+    if (isGenerating) {
       quillRef.current.root.innerHTML = "Generating...";
-  });
+    }
+  }, [isGenerating]);
 
   useEffect(() => {
+    console.log("editorRef.current:", editorRef.current);
     if (!quillRef.current && editorRef.current) {
       quillRef.current = new Quill(editorRef.current, { theme: "snow" });
     }
@@ -147,7 +160,7 @@ const AddBlog = () => {
             type="button"
             onClick={() => generateContent()}
             disabled={isGenerating}
-            className="absolute bottom-1 right-2 ml-2 text-xs text-white bg-black/70 px-4 py-1.5 rounded hover:underline cursor:pointer"
+            className="absolute bottom-1 right-2 ml-2 text-xs text-white bg-black/70 px-4 py-1.5 rounded hover:underline cursor-pointer"
           >
             {!isGenerating ? "Generate with AI" : "Generating"}
           </button>
@@ -158,13 +171,11 @@ const AddBlog = () => {
           onChange={(e) => setCategory(e.target.value)}
           className="mt-2 px-3 py-2 border text-gray-500 border-gray-300 outline-none rounded"
         >
-          {blogCategories.map((blog, index) => {
-            return (
-              <option key={index} value={blog}>
-                {blog}
-              </option>
-            );
-          })}
+          {blogCategories.map((blog, index) => (
+            <option key={index} value={blog}>
+              {blog}
+            </option>
+          ))}
         </select>
         <div className="flex gap-2 mt-4">
           <p>Publish Now</p>
