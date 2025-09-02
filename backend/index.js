@@ -27,6 +27,10 @@ app.use("/api/comments", commentsRoute);
 app.use("/api/subscribe", subscribeRoutes);
 app.use("/api/ai", aiRoute);
 app.use("/api/user", userRoute);
+app.get("/api/test", (req, res) => {
+  res.send("Api is working fine");
+});
+
 app.use(error);
 
 if (process.env.NODE_ENV !== "production") {
