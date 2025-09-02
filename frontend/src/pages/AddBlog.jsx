@@ -3,11 +3,14 @@ import { assets, blogCategories } from "../assets/assets.js";
 import Quill from "quill";
 import Navbar from "../components/Navbar";
 import { useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const AddBlog = () => {
   const editorRef = useRef(null);
   const quillRef = useRef(null);
   const user = useSelector((state) => state.user.id);
+  const location = useLocation(); // Get URL query parameters
+  const navigate = useNavigate(); // For controlled navigation
   const [image, setImage] = useState(false);
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("Startup");
@@ -17,7 +20,17 @@ const AddBlog = () => {
   const [error, setError] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Log Redux user state to check for changes
+  // Handle URL query parameter for category
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const urlCategory = params.get("category");
+    console.log("URL query category:", urlCategory);
+    if (urlCategory && blogCategories.includes(urlCategory)) {
+      setCategory(urlCategory);
+    }
+  }, [location.search]);
+
+  // Log Redux user state
   useEffect(() => {
     console.log("Redux user:", user);
   }, [user]);
@@ -26,6 +39,9 @@ const AddBlog = () => {
   useEffect(() => {
     const handleBeforeUnload = (event) => {
       console.log("Page is about to reload or navigate");
+      // Uncomment to debug by preventing unload
+      // event.preventDefault();
+      // event.returnValue = "";
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => {
@@ -59,10 +75,9 @@ const AddBlog = () => {
   }, [isGenerating]);
 
   const submitHandler = async (event) => {
-    // Prevent any default browser behavior
     if (event) {
       event.preventDefault();
-      event.stopPropagation(); // Stop event propagation
+      event.stopPropagation();
       console.log("Button click event:", event);
     }
 
@@ -106,7 +121,7 @@ const AddBlog = () => {
           description: blogDescription,
           category,
           isPublished: published,
-          ...(user && { user }), // Conditionally include user
+          ...(user && { user }),
         };
 
         const formData = new FormData();
@@ -122,21 +137,24 @@ const AddBlog = () => {
             {
               method: "POST",
               headers: {
-                Authorization: localStorage.getItem("token"),
+                Authorization: localStorage.getItem("token") || "",
               },
               body: formData,
             }
           );
           console.log("Fetch response status:", res.status, res.statusText);
-          if (!res.ok) {
-            console.log("Response headers:", Object.fromEntries(res.headers));
-          }
+          console.log(
+            "Fetch response headers:",
+            Object.fromEntries(res.headers)
+          );
           const data = await res.json();
           console.log("Fetch response data:", data);
           if (data.success === false) {
             setError(data.message || "Failed to add blog.");
           } else {
             console.log("Blog added successfully");
+            // Optionally navigate after success
+            navigate("/blogs");
           }
         } catch (err) {
           console.error("Fetch error:", err.message);
@@ -253,7 +271,10 @@ const AddBlog = () => {
         <p className="mt-4">Blog Category</p>
         <select
           name="category"
-          onChange={(e) => setCategory(e.target.value)}
+          onChange={(e) => {
+            console.log("Category changed to:", e.target.value);
+            setCategory(e.target.value);
+          }}
           className="mt-2 px-3 py-2 border text-gray-500 border-gray-300 outline-none rounded"
           value={category}
         >
