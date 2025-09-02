@@ -136,7 +136,7 @@ const AddBlog = () => {
   }, []);
 
   return (
-    <form className="w-screen min-h-screen bg-blue-50/50 text-gray-600 overflow-y-auto">
+    <div className="w-screen min-h-screen bg-blue-50/50 text-gray-600 overflow-y-auto">
       <Navbar />
       <div className="bg-white w-full max-w-4xl mx-auto my-10 p-6 sm:p-10 shadow rounded-lg">
         <p>Upload thumbnail</p>
@@ -209,7 +209,6 @@ const AddBlog = () => {
         </div>
         <button
           className="mt-8 w-40 h-10 bg-primary text-white rounded cursor-pointer text-sm"
-          type="button"
           onClick={submitHandler}
           disabled={isLoading}
         >
@@ -217,7 +216,7 @@ const AddBlog = () => {
         </button>
       </div>
       {error && <p className="text-red-500 text-sm">{error}</p>}
-    </form>
+    </div>
   );
 };
 
