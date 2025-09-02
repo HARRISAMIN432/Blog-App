@@ -6,6 +6,7 @@ import NewsLetter from "../components/NewsLetter";
 import Footer from "../components/Footer";
 
 const Home = () => {
+  console.log("Rendering Home component");
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearch = (query) => {
