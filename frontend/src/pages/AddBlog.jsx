@@ -5,7 +5,6 @@ import Navbar from "../components/Navbar";
 import { useSelector } from "react-redux";
 
 const AddBlog = () => {
-  console.log("Rendering AddBlog component");
   const editorRef = useRef(null);
   const quillRef = useRef(null);
   let user = useSelector((state) => state.user.id);
@@ -75,7 +74,6 @@ const AddBlog = () => {
 
     e.preventDefault();
     e.stopPropagation();
-    e.stopImmediatePropagation();
 
     console.log("URL after preventDefault:", window.location.href);
 
@@ -226,7 +224,14 @@ const AddBlog = () => {
       <Navbar />
       <div className="bg-white w-full max-w-4xl mx-auto my-10 p-6 sm:p-10 shadow rounded-lg">
         {/* Prevent any form nesting issues */}
-        <form onSubmit={submitHandler} noValidate>
+        <form
+          onSubmit={submitHandler}
+          noValidate
+          autoComplete="off"
+          method="post"
+          action=""
+          onReset={(e) => e.preventDefault()}
+        >
           <p>Upload thumbnail</p>
           <label htmlFor="image">
             <img
