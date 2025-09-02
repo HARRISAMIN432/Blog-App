@@ -19,6 +19,8 @@ const AddBlog = () => {
 
   const submitHandler = () => {
     e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
     const run = async () => {
       setIsLoading(true);
       setError("");
@@ -188,7 +190,7 @@ const AddBlog = () => {
         </div>
         <p className="mt-4">Blog Category</p>
         <select
-          name="category"
+          value={category}
           onChange={(e) => setCategory(e.target.value)}
           className="mt-2 px-3 py-2 border text-gray-500 border-gray-300 outline-none rounded"
         >
