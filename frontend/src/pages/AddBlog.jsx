@@ -17,51 +17,67 @@ const AddBlog = () => {
   const [error, setError] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const submitHandler = async (e) => {
+  const submitHandler = (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    const blogDescription = quillRef.current.root.innerHTML;
-    let blogObject = {};
-    if (!user) {
-      blogObject = {
-        title,
-        subtitle,
-        description: blogDescription,
-        category,
-        isPublished: published,
-      };
-    } else {
-      blogObject = {
-        title,
-        subtitle,
-        description: blogDescription,
-        category,
-        isPublished: published,
-        user,
-      };
-    }
-    if (!category || category === "Select Category" || category === "") {
-      setError("Please select a valid blog category.");
-      return;
-    }
-    const formData = new FormData();
-    formData.append("blog", JSON.stringify(blogObject));
-    formData.append("image", image);
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/blog/add`, {
-        method: "POST",
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-        body: formData,
-      });
-      const data = await res.json();
-      if (data.success === false)
-        setError(data.message || "Failed to add blog.");
-    } catch (err) {
-      setError("Something went wrong while uploading the blog.");
-    }
-    setIsLoading(false);
+
+    const run = async () => {
+      setIsLoading(true);
+      const blogDescription = quillRef.current.root.innerHTML;
+
+      let blogObject = {};
+      if (!user) {
+        blogObject = {
+          title,
+          subtitle,
+          description: blogDescription,
+          category,
+          isPublished: published,
+        };
+      } else {
+        blogObject = {
+          title,
+          subtitle,
+          description: blogDescription,
+          category,
+          isPublished: published,
+          user,
+        };
+      }
+
+      if (!category || category === "Select Category" || category === "") {
+        setError("Please select a valid blog category.");
+        setIsLoading(false);
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("blog", JSON.stringify(blogObject));
+      formData.append("image", image);
+
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/blog/add`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: localStorage.getItem("token"),
+            },
+            body: formData,
+          }
+        );
+
+        const data = await res.json();
+        if (data.success === false) {
+          setError(data.message || "Failed to add blog.");
+        }
+      } catch (err) {
+        setError("Something went wrong while uploading the blog.");
+      }
+
+      setIsLoading(false);
+    };
+
+    run();
   };
 
   const generateContent = async () => {
