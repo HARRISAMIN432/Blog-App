@@ -8,14 +8,17 @@ const CommentTableItem = ({ comment, fetchComments }) => {
 
   const deleteComment = async () => {
     try {
-      const res = await fetch(`/api/admin/delete-comment`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
-        },
-        body: JSON.stringify({ id: _id }),
-      });
+      const res = await fetch(
+        `${import.meta.VITE_API_URL}/api/admin/delete-comment`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
+          body: JSON.stringify({ id: _id }),
+        }
+      );
       const data = await res.json();
       if (!data.success) setError(data.message);
     } catch (e) {
@@ -26,14 +29,17 @@ const CommentTableItem = ({ comment, fetchComments }) => {
 
   const handleApproval = async () => {
     try {
-      const res = await fetch(`/api/admin/approve-comment`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
-        },
-        body: JSON.stringify({ id: _id }),
-      });
+      const res = await fetch(
+        `${import.meta.VITE_API_URL}/api/admin/approve-comment`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
+          body: JSON.stringify({ id: _id }),
+        }
+      );
       const data = await res.json();
       if (!data.success) setError(data.message);
     } catch (e) {

@@ -33,7 +33,9 @@ const Header = ({ onSearch }) => {
 
   const fetchPopularSearches = async () => {
     try {
-      const res = await fetch("/api/blog/popular-searches");
+      const res = await fetch(
+        `${import.meta.VITE_API_URL}/api/blog/popular-searches`
+      );
       const data = await res.json();
       if (data.success) {
         setPopularSearches(data.popularSearches);
@@ -52,7 +54,9 @@ const Header = ({ onSearch }) => {
     try {
       setLoading(true);
       const res = await fetch(
-        `/api/blog/suggestions?q=${encodeURIComponent(query.trim())}`
+        `${
+          import.meta.VITE_API_URL
+        }/api/blog/suggestions?q=${encodeURIComponent(query.trim())}`
       );
       const data = await res.json();
       if (data.success) {

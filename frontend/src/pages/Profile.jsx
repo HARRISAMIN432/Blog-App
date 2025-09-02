@@ -22,7 +22,7 @@ const Profile = () => {
 
   const fetchUserBlogs = async () => {
     try {
-      const res = await fetch(`/api/user/my-blogs`, {
+      const res = await fetch(`${import.meta.VITE_API_URL}/api/user/my-blogs`, {
         headers: {
           Authorization: localStorage.getItem("token"),
         },
@@ -36,11 +36,14 @@ const Profile = () => {
 
   const fetchUserComments = async () => {
     try {
-      const res = await fetch(`/api/user/my-comments`, {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      });
+      const res = await fetch(
+        `${import.meta.VITE_API_URL}/api/user/my-comments`,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
       const data = await res.json();
       if (data.success) setComments(data.comments);
     } catch (err) {
@@ -51,14 +54,17 @@ const Profile = () => {
   const handleUpdateProfile = async () => {
     setIsUpdating(true);
     try {
-      const res = await fetch(`/api/user/update-profile`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
-        },
-        body: JSON.stringify({ name, email }),
-      });
+      const res = await fetch(
+        `${import.meta.VITE_API_URL}/api/user/update-profile`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
+          body: JSON.stringify({ name, email }),
+        }
+      );
       const data = await res.json();
       if (data.success) {
         alert("Profile updated successfully!");
@@ -76,14 +82,17 @@ const Profile = () => {
     if (!confirm("Are you sure you want to delete this blog?")) return;
 
     try {
-      const res = await fetch(`/api/user/delete-blog`, {
-        method: "DELETE",
-        headers: {
-          Authorization: localStorage.getItem("token"),
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id: blogId }),
-      });
+      const res = await fetch(
+        `${import.meta.VITE_API_URL}/api/user/delete-blog`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: localStorage.getItem("token"),
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: blogId }),
+        }
+      );
       const data = await res.json();
       if (data.success) {
         setBlogs(blogs.filter((blog) => blog._id !== blogId));
@@ -100,12 +109,15 @@ const Profile = () => {
     if (!confirm("Are you sure you want to delete this comment?")) return;
 
     try {
-      const res = await fetch(`/api/user/delete-comment/${commentId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      });
+      const res = await fetch(
+        `${import.meta.VITE_API_URL}/api/user/delete-comment/${commentId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
       const data = await res.json();
       if (data.success) {
         setComments(comments.filter((comment) => comment._id !== commentId));

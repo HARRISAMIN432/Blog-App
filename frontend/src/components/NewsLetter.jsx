@@ -11,7 +11,7 @@ const NewsLetter = () => {
     setError("");
 
     try {
-      const res = await fetch("/api/subscribe", {
+      const res = await fetch(`${import.meta.VITE_API_URL}/api/subscribe`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

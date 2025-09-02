@@ -47,7 +47,7 @@ const AddBlog = () => {
     formData.append("blog", JSON.stringify(blogObject));
     formData.append("image", image);
     try {
-      const res = await fetch("/api/blog/add", {
+      const res = await fetch(`${import.meta.VITE_API_URL}/api/blog/add`, {
         method: "POST",
         headers: {
           Authorization: localStorage.getItem("token"),
@@ -66,11 +66,14 @@ const AddBlog = () => {
   const generateContent = async () => {
     setIsGenerating(true);
     try {
-      const res = await fetch("/api/ai/generate-blog", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic: title, subtitle }),
-      });
+      const res = await fetch(
+        `${import.meta.VITE_API_URL}/api/ai/generate-blog`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ topic: title, subtitle }),
+        }
+      );
       const data = await res.json();
       if (data.success) {
         let cleanedContent = data.content

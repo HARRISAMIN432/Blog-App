@@ -5,9 +5,12 @@ const Subscribers = () => {
 
   const fetchSubscribers = async () => {
     try {
-      const res = await fetch("/api/admin/subscribers", {
-        headers: { Authorization: localStorage.getItem("token") },
-      });
+      const res = await fetch(
+        `${import.meta.VITE_API_URL}/api/admin/subscribers`,
+        {
+          headers: { Authorization: localStorage.getItem("token") },
+        }
+      );
       const data = await res.json();
       if (data.success) setSubscribers(data.subscribers);
     } catch (err) {

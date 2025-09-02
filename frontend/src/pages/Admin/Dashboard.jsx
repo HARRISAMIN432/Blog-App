@@ -12,11 +12,14 @@ const Dashboard = () => {
 
   const fetchDashboard = async () => {
     try {
-      const data = await fetch(`/api/admin/dashboard`, {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      });
+      const data = await fetch(
+        `${import.meta.VITE_API_URL}/api/admin/dashboard`,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
       const res = await data.json();
       setDashboardData(res.dashboardData);
     } catch (e) {

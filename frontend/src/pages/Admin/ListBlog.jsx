@@ -6,7 +6,7 @@ const ListBlog = () => {
 
   const fetchBlogs = async () => {
     try {
-      const res = await fetch(`/api/admin/blogs`, {
+      const res = await fetch(`${import.meta.VITE_API_URL}/api/admin/blogs`, {
         headers: {
           Authorization: localStorage.getItem("token"),
         },
