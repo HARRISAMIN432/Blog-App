@@ -17,7 +17,7 @@ const AddBlog = () => {
   const [error, setError] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const submitHandler = async () => {
+  const submitHandler = () => {
     e.preventDefault();
     const run = async () => {
       setIsLoading(true);
@@ -69,6 +69,7 @@ const AddBlog = () => {
       formData.append("image", image);
 
       try {
+        console.log("We have arrived");
         const res = await fetch(
           `${import.meta.env.VITE_API_URL}/api/blog/add`,
           {
@@ -79,7 +80,7 @@ const AddBlog = () => {
             body: formData,
           }
         );
-
+        console.log("Request sent");
         const data = await res.json();
         if (data.success === false) {
           setError(data.message || "Failed to add blog.");
