@@ -5,6 +5,7 @@ const imagekit = require("../config/imagekit");
 const Comment = require("../models/Comment");
 
 exports.addBlog = async (req, res, next) => {
+  console.log("Sun be");
   try {
     const { title, subtitle, description, category, isPublished, user } =
       JSON.parse(req.body.blog);
