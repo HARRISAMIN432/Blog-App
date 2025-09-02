@@ -8,10 +8,11 @@ const mongoose = require("mongoose");
 exports.addBlog = async (req, res, next) => {
   console.log("Sun be");
   try {
-    const { title, subtitle, description, category, isPublished, user } =
-      JSON.parse(req.body.blog);
-    console.log(req.blog);
-    console.log(req.blog);
+    const { title, subtitle, description, category, isPublished } = JSON.parse(
+      req.body.blog
+    );
+    console.log(req.body.blog);
+    console.log(req.file);
     const imageFile = req.file;
     if (!title || !description || !category || !imageFile) {
       return next(new ErrorHandler("Please fill all fields", 400));
@@ -29,7 +30,7 @@ exports.addBlog = async (req, res, next) => {
       description,
       category,
       image,
-      user: user,
+      user: req.user._id,
       isPublished: isPublished === true || isPublished === "true",
     });
     if (!blog) {
