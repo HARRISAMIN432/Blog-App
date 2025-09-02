@@ -103,7 +103,7 @@ const AddBlog = () => {
 
   return (
     <form
-      onSubmit={submitHandler}
+      onSubmit={(e) => submitHandler(e)}
       className="w-screen min-h-screen bg-blue-50/50 text-gray-600 overflow-y-auto"
     >
       <Navbar />
