@@ -17,65 +17,57 @@ const AddBlog = () => {
   const [error, setError] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const submitHandler = async (e) => {
-    // Prevent any default behavior
-    e.preventDefault();
-    e.stopPropagation();
-
-    // Prevent multiple submissions
-    if (isLoading) return;
-
+  const submitHandler = async () => {
     const run = async () => {
       setIsLoading(true);
       setError("");
+      const blogDescription = quillRef.current.root.innerHTML;
+      if (!quillRef.current || !quillRef.current.root) {
+        setError("Quill editor not initialized");
+        setIsLoading(false);
+        return;
+      }
+      if (!image) {
+        setError("Please upload a thumbnail image for the blog.");
+        setIsLoading(false);
+        return;
+      }
+      if (!title || !subtitle || !blogDescription || !category) {
+        setError("Please fill all the fields.");
+        setIsLoading(false);
+        return;
+      }
+      let blogObject = {};
+      if (!user) {
+        blogObject = {
+          title,
+          subtitle,
+          description: blogDescription,
+          category,
+          isPublished: published,
+        };
+      } else {
+        blogObject = {
+          title,
+          subtitle,
+          description: blogDescription,
+          category,
+          isPublished: published,
+          user,
+        };
+      }
+
+      if (!category || category === "Select Category" || category === "") {
+        setError("Please select a valid blog category.");
+        setIsLoading(false);
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("blog", JSON.stringify(blogObject));
+      formData.append("image", image);
 
       try {
-        const blogDescription = quillRef.current.root.innerHTML;
-
-        if (!quillRef.current || !quillRef.current.root) {
-          setError("Quill editor not initialized");
-          return;
-        }
-
-        if (!image) {
-          setError("Please upload a thumbnail image for the blog.");
-          return;
-        }
-
-        if (!title || !subtitle || !blogDescription || !category) {
-          setError("Please fill all the fields.");
-          return;
-        }
-
-        if (!category || category === "Select Category" || category === "") {
-          setError("Please select a valid blog category.");
-          return;
-        }
-
-        let blogObject = {};
-        if (!user) {
-          blogObject = {
-            title,
-            subtitle,
-            description: blogDescription,
-            category,
-            isPublished: published,
-          };
-        } else {
-          blogObject = {
-            title,
-            subtitle,
-            description: blogDescription,
-            category,
-            isPublished: published,
-            user,
-          };
-        }
-
-        const formData = new FormData();
-        formData.append("blog", JSON.stringify(blogObject));
-        formData.append("image", image);
-
         const res = await fetch(
           `${import.meta.env.VITE_API_URL}/api/blog/add`,
           {
@@ -88,33 +80,22 @@ const AddBlog = () => {
         );
 
         const data = await res.json();
-
         if (data.success === false) {
           setError(data.message || "Failed to add blog.");
-          return;
         }
-
-        // Success case - reset form
-        setTitle("");
-        setSubtitle("");
-        setCategory("Startup");
-        setImage(false);
-        setPublished(false);
-        if (quillRef.current) {
-          quillRef.current.root.innerHTML = "";
-        }
-
-        // Optional: Show success message
-        setError(""); // Clear any previous errors
       } catch (err) {
-        console.error("Error uploading blog:", err);
         setError("Something went wrong while uploading the blog.");
-      } finally {
-        setIsLoading(false);
       }
+      setIsLoading(false);
+      setTitle("");
+      setSubtitle("");
+      setCategory("Startup");
+      setImage(false);
+      setPublished(false);
+      quillRef.current.root.innerHTML = "";
     };
 
-    await run();
+    run();
   };
 
   const generateContent = async () => {
@@ -144,9 +125,8 @@ const AddBlog = () => {
   };
 
   useEffect(() => {
-    if (isGenerating === true && quillRef.current) {
+    if (isGenerating === true)
       quillRef.current.root.innerHTML = "Generating...";
-    }
   }, [isGenerating]);
 
   useEffect(() => {
@@ -159,94 +139,83 @@ const AddBlog = () => {
     <div className="w-screen min-h-screen bg-blue-50/50 text-gray-600 overflow-y-auto">
       <Navbar />
       <div className="bg-white w-full max-w-4xl mx-auto my-10 p-6 sm:p-10 shadow rounded-lg">
-        {/* Wrap everything in a form with onSubmit handler */}
-        <form onSubmit={submitHandler}>
-          <p>Upload thumbnail</p>
-          <label htmlFor="image">
-            <img
-              src={!image ? assets.upload_area : URL.createObjectURL(image)}
-              alt=""
-              className="mt-2 h-16 rounded cursor-pointer"
-            />
-            <input
-              type="file"
-              id="image"
-              onChange={(e) => setImage(e.target.files[0])}
-              hidden
-              required
-            />
-          </label>
-
-          <p className="mt-4">Blog title</p>
-          <input
-            type="text"
-            placeholder="Type here"
-            required
-            className="w-full max-w-lg mt-2 border border-gray-300 outline-none rounded px-3 py-2"
-            onChange={(e) => setTitle(e.target.value)}
-            value={title}
+        <p>Upload thumbnail</p>
+        <label htmlFor="image">
+          <img
+            src={!image ? assets.upload_area : URL.createObjectURL(image)}
+            alt=""
+            className="mt-2 h-16 rounded cursor-pointer"
           />
-
-          <p className="mt-4">Blog subtitle</p>
           <input
-            type="text"
-            placeholder="Type here"
+            type="file"
+            id="image"
+            onChange={(e) => setImage(e.target.files[0])}
+            hidden
             required
-            className="w-full max-w-lg mt-2 border border-gray-300 outline-none rounded px-3 py-2"
-            onChange={(e) => setSubtitle(e.target.value)}
-            value={subtitle}
           />
-
-          <p className="mt-4">Blog description</p>
-          <div className="max-w-lg h-74 pb-16 sm:pb-10 pt-2 relative">
-            <div ref={editorRef}></div>
-            <button
-              type="button"
-              onClick={generateContent}
-              disabled={isGenerating}
-              className="absolute bottom-1 right-2 ml-2 text-xs text-white bg-black/70 px-4 py-1.5 rounded hover:underline cursor-pointer disabled:opacity-50"
-            >
-              {!isGenerating ? "Generate with AI" : "Generating"}
-            </button>
-          </div>
-
-          <p className="mt-4">Blog Category</p>
-          <select
-            name="category"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="mt-2 px-3 py-2 border text-gray-500 border-gray-300 outline-none rounded"
-          >
-            {blogCategories.map((blog, index) => {
-              return (
-                <option key={index} value={blog}>
-                  {blog}
-                </option>
-              );
-            })}
-          </select>
-
-          <div className="flex gap-2 mt-4">
-            <p>Publish Now</p>
-            <input
-              type="checkbox"
-              checked={published}
-              onChange={(e) => setPublished(e.target.checked)}
-              className="scale-125 cursor-pointer"
-            />
-          </div>
-
+        </label>
+        <p className="mt-4">Blog title</p>
+        <input
+          type="text"
+          placeholder="Type here"
+          required
+          className="w-full max-w-lg mt-2 border border-gray-300 outline-none rounded"
+          onChange={(e) => setTitle(e.target.value)}
+          value={title}
+        />
+        <p className="mt-4">Blog subtitle</p>
+        <input
+          type="text"
+          placeholder="Type here"
+          required
+          className="w-full max-w-lg mt-2 border border-gray-300 outline-none rounded"
+          onChange={(e) => setSubtitle(e.target.value)}
+          value={subtitle}
+        />
+        <p className="mt-4">Blog description</p>
+        <div className="max-w-lg h-74 pb-16 sm:pb-10 pt-2 relative">
+          <div ref={editorRef}></div>
           <button
-            type="submit"
-            className="mt-8 w-40 h-10 bg-primary text-white rounded cursor-pointer text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={isLoading}
+            type="button"
+            onClick={() => generateContent()}
+            disabled={isGenerating}
+            className="absolute bottom-1 right-2 ml-2 text-xs text-white bg-black/70 px-4 py-1.5 rounded hover:underline cursor:pointer"
           >
-            {!isLoading ? "Add Blog" : "Creating..."}
+            {!isGenerating ? "Generate with AI" : "Generating"}
           </button>
-        </form>
-
-        {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
+        </div>
+        <p className="mt-4">Blog Category</p>
+        <select
+          name="category"
+          onChange={(e) => setCategory(e.target.value)}
+          className="mt-2 px-3 py-2 border text-gray-500 border-gray-300 outline-none rounded"
+        >
+          {blogCategories.map((blog, index) => {
+            return (
+              <option key={index} value={blog}>
+                {blog}
+              </option>
+            );
+          })}
+        </select>
+        <div className="flex gap-2 mt-4">
+          <p>Publish Now</p>
+          <input
+            type="checkbox"
+            checked={published}
+            onChange={(e) => setPublished(e.target.checked)}
+            className="scale-125 cursor-pointer"
+          />
+        </div>
+        <button
+          className="mt-8 w-40 h-10 bg-primary text-white rounded cursor-pointer text-sm"
+          onClick={submitHandler}
+          disabled={isLoading}
+        >
+          {!isLoading ? "Add Blog" : "Creating..."}
+        </button>
       </div>
+      {error && <p className="text-red-500 text-sm">{error}</p>}
     </div>
   );
 };
