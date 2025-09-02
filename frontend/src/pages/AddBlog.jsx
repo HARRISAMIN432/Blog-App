@@ -17,8 +17,7 @@ const AddBlog = () => {
   const [error, setError] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const submitHandler = async (e) => {
-    e.preventDefault();
+  const submitHandler = async () => {
     const run = async () => {
       setIsLoading(true);
       setError("");
@@ -211,6 +210,7 @@ const AddBlog = () => {
         <button
           className="mt-8 w-40 h-10 bg-primary text-white rounded cursor-pointer text-sm"
           type="button"
+          onClick={submitHandler}
           disabled={isLoading}
         >
           {!isLoading ? "Add Blog" : "Creating..."}
