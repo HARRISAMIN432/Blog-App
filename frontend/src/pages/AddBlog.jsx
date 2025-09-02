@@ -29,9 +29,9 @@ const AddBlog = () => {
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, []);
+  });
 
-  const submitHandler = () => {
+  const submitHandler = (e) => {
     e.preventDefault();
     e.stopPropagation();
     e.stopImmediatePropagation();
