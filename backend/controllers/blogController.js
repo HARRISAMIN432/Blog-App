@@ -42,6 +42,7 @@ exports.addBlog = async (req, res, next) => {
       blog,
     });
   } catch (error) {
+    console.log("Phat gyi");
     next(error);
   }
 };
