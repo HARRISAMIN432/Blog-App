@@ -9,7 +9,7 @@ const CommentTableItem = ({ comment, fetchComments }) => {
   const deleteComment = async () => {
     try {
       const res = await fetch(
-        `${import.meta.VITE_API_URL}/api/admin/delete-comment`,
+        `${import.meta.env.VITE_API_URL}/api/admin/delete-comment`,
         {
           method: "POST",
           headers: {
@@ -30,7 +30,7 @@ const CommentTableItem = ({ comment, fetchComments }) => {
   const handleApproval = async () => {
     try {
       const res = await fetch(
-        `${import.meta.VITE_API_URL}/api/admin/approve-comment`,
+        `${import.meta.env.VITE_API_URL}/api/admin/approve-comment`,
         {
           method: "POST",
           headers: {

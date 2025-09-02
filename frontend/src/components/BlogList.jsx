@@ -23,7 +23,7 @@ const BlogList = ({ searchQuery = "", searchCategory = "All" }) => {
   const fetchBlogs = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${import.meta.VITE_API_URL}/api/blog/all`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/blog/all`);
       const data = await res.json();
       if (data.success === true) {
         setBlogs(data.blogs);
@@ -49,7 +49,7 @@ const BlogList = ({ searchQuery = "", searchCategory = "All" }) => {
       params.append("limit", 20);
 
       const res = await fetch(
-        `${import.meta.VITE_API_URL}/api/blog/search?${params}`
+        `${import.meta.env.VITE_API_URL}/api/blog/search?${params}`
       );
       const data = await res.json();
 

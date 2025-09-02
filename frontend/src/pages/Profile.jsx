@@ -22,11 +22,14 @@ const Profile = () => {
 
   const fetchUserBlogs = async () => {
     try {
-      const res = await fetch(`${import.meta.VITE_API_URL}/api/user/my-blogs`, {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/user/my-blogs`,
+        {
+          headers: {
+            Authorization: localStorage.getItem("token"),
+          },
+        }
+      );
       const data = await res.json();
       if (data.success) setBlogs(data.blogs);
     } catch (err) {
@@ -37,7 +40,7 @@ const Profile = () => {
   const fetchUserComments = async () => {
     try {
       const res = await fetch(
-        `${import.meta.VITE_API_URL}/api/user/my-comments`,
+        `${import.meta.env.VITE_API_URL}/api/user/my-comments`,
         {
           headers: {
             Authorization: localStorage.getItem("token"),
@@ -55,7 +58,7 @@ const Profile = () => {
     setIsUpdating(true);
     try {
       const res = await fetch(
-        `${import.meta.VITE_API_URL}/api/user/update-profile`,
+        `${import.meta.env.VITE_API_URL}/api/user/update-profile`,
         {
           method: "PUT",
           headers: {
@@ -83,7 +86,7 @@ const Profile = () => {
 
     try {
       const res = await fetch(
-        `${import.meta.VITE_API_URL}/api/user/delete-blog`,
+        `${import.meta.env.VITE_API_URL}/api/user/delete-blog`,
         {
           method: "DELETE",
           headers: {
@@ -110,7 +113,7 @@ const Profile = () => {
 
     try {
       const res = await fetch(
-        `${import.meta.VITE_API_URL}/api/user/delete-comment/${commentId}`,
+        `${import.meta.env.VITE_API_URL}/api/user/delete-comment/${commentId}`,
         {
           method: "DELETE",
           headers: {

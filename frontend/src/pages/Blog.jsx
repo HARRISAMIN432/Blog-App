@@ -21,7 +21,7 @@ const Blog = () => {
 
   const fetchBlogData = async () => {
     try {
-      const res = await fetch(`${import.meta.VITE_API_URL}/api/blog/${id}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/blog/${id}`);
       const data = await res.json();
       if (data.success === true) setData(data.blog);
       else setError(data.message || "Something went wrong.");
@@ -32,7 +32,7 @@ const Blog = () => {
 
   const fetchComments = async () => {
     try {
-      const res = await fetch(`${import.meta.VITE_API_URL}/api/comments`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/comments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -61,7 +61,7 @@ const Blog = () => {
     }
     try {
       const res = await fetch(
-        `${import.meta.VITE_API_URL}/api/comments/add-comment`,
+        `${import.meta.env.VITE_API_URL}/api/comments/add-comment`,
         {
           method: "POST",
           headers: {

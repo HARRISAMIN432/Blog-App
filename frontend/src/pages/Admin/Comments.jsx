@@ -8,7 +8,7 @@ const Comments = () => {
   const fetchComments = async () => {
     try {
       const res = await fetch(
-        `${import.meta.VITE_API_URL}/api/admin/comments`,
+        `${import.meta.env.VITE_API_URL}/api/admin/comments`,
         {
           headers: {
             Authorization: localStorage.getItem("token"),

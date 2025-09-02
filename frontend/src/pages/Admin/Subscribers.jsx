@@ -6,7 +6,7 @@ const Subscribers = () => {
   const fetchSubscribers = async () => {
     try {
       const res = await fetch(
-        `${import.meta.VITE_API_URL}/api/admin/subscribers`,
+        `${import.meta.env.VITE_API_URL}/api/admin/subscribers`,
         {
           headers: { Authorization: localStorage.getItem("token") },
         }

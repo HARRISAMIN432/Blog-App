@@ -8,7 +8,7 @@ const BlogTableItem = ({ blog, fetchBlogs, index }) => {
   const togglePublishStatus = async () => {
     try {
       const res = await fetch(
-        `${import.meta.VITE_API_URL}/api/blog/toggle-publish`,
+        `${import.meta.env.VITE_API_URL}/api/blog/toggle-publish`,
         {
           method: "POST",
           headers: {
@@ -31,14 +31,17 @@ const BlogTableItem = ({ blog, fetchBlogs, index }) => {
 
   const deleteBlog = async () => {
     try {
-      const res = await fetch(`${import.meta.VITE_API_URL}/api/blog/delete`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: localStorage.getItem("token"),
-        },
-        body: JSON.stringify({ id: blog._id }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/blog/delete`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
+          body: JSON.stringify({ id: blog._id }),
+        }
+      );
 
       const data = await res.json();
       console.log(data);
