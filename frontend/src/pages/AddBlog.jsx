@@ -127,7 +127,7 @@ const AddBlog = () => {
   useEffect(() => {
     if (isGenerating === true)
       quillRef.current.root.innerHTML = "Generating...";
-  });
+  }, [isGenerating]);
 
   useEffect(() => {
     if (!quillRef.current && editorRef.current) {
