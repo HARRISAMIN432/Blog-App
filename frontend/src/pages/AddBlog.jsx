@@ -21,8 +21,23 @@ const AddBlog = () => {
     e.preventDefault();
     const run = async () => {
       setIsLoading(true);
+      setError("");
       const blogDescription = quillRef.current.root.innerHTML;
-
+      if (!quillRef.current || !quillRef.current.root) {
+        setError("Quill editor not initialized");
+        setIsLoading(false);
+        return;
+      }
+      if (!image) {
+        setError("Please upload a thumbnail image for the blog.");
+        setIsLoading(false);
+        return;
+      }
+      if (!title || !subtitle || !blogDescription || !category) {
+        setError("Please fill all the fields.");
+        setIsLoading(false);
+        return;
+      }
       let blogObject = {};
       if (!user) {
         blogObject = {
@@ -72,8 +87,13 @@ const AddBlog = () => {
       } catch (err) {
         setError("Something went wrong while uploading the blog.");
       }
-
       setIsLoading(false);
+      setTitle("");
+      setSubtitle("");
+      setCategory("Startup");
+      setImage(false);
+      setPublished(false);
+      quillRef.current.root.innerHTML = "";
     };
 
     run();
@@ -117,10 +137,7 @@ const AddBlog = () => {
   }, []);
 
   return (
-    <form
-      onSubmit={(e) => submitHandler(e)}
-      className="w-screen min-h-screen bg-blue-50/50 text-gray-600 overflow-y-auto"
-    >
+    <form className="w-screen min-h-screen bg-blue-50/50 text-gray-600 overflow-y-auto">
       <Navbar />
       <div className="bg-white w-full max-w-4xl mx-auto my-10 p-6 sm:p-10 shadow rounded-lg">
         <p>Upload thumbnail</p>
@@ -193,7 +210,7 @@ const AddBlog = () => {
         </div>
         <button
           className="mt-8 w-40 h-10 bg-primary text-white rounded cursor-pointer text-sm"
-          type="submit"
+          type="button"
           disabled={isLoading}
         >
           {!isLoading ? "Add Blog" : "Creating..."}
