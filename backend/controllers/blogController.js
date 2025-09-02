@@ -3,6 +3,7 @@ const ErrorHandler = require("../utils/errorHandler");
 const fs = require("fs");
 const imagekit = require("../config/imagekit");
 const Comment = require("../models/Comment");
+const mongoose = require("mongoose");
 
 exports.addBlog = async (req, res, next) => {
   console.log("Sun be");
@@ -10,12 +11,13 @@ exports.addBlog = async (req, res, next) => {
     const { title, subtitle, description, category, isPublished, user } =
       JSON.parse(req.body.blog);
     console.log(req.blog);
+    const userId = user ? mongoose.Types.ObjectId(user) : undefined;
     const imageFile = req.file;
     if (!title || !description || !category || !imageFile) {
       return next(new ErrorHandler("Please fill all fields", 400));
     }
     const imagekitResponse = await imagekit.upload({
-      file: fs.createReadStream(imageFile.path), // use stream instead of readFileSync
+      file: fs.createReadStream(imageFile.path),
       fileName: imageFile.originalname,
       folder: "/blogs",
     });
@@ -43,6 +45,7 @@ exports.addBlog = async (req, res, next) => {
     next(error);
   }
 };
+
 exports.getAllBlogs = async (req, res, next) => {
   const blogs = await Blog.find();
   if (!blogs) return next(new ErrorHandler("No blogs found", 404));
