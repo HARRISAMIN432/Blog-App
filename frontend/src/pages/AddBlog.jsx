@@ -17,9 +17,8 @@ const AddBlog = () => {
   const [error, setError] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
-
     const run = async () => {
       setIsLoading(true);
       const blogDescription = quillRef.current.root.innerHTML;
