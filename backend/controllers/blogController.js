@@ -11,6 +11,7 @@ exports.addBlog = async (req, res, next) => {
     const { title, subtitle, description, category, isPublished, user } =
       JSON.parse(req.body.blog);
     console.log(req.blog);
+    console.log(req.blog);
     const imageFile = req.file;
     if (!title || !description || !category || !imageFile) {
       return next(new ErrorHandler("Please fill all fields", 400));
