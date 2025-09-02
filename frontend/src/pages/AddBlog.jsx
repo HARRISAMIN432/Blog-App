@@ -17,6 +17,20 @@ const AddBlog = () => {
   const [error, setError] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      console.log("Page unload triggered");
+      e.preventDefault();
+      return "Are you sure you want to leave?";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
   const submitHandler = () => {
     e.preventDefault();
     e.stopPropagation();
