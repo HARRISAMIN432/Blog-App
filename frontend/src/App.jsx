@@ -4,7 +4,7 @@ import Home from "./pages/Home";
 import Blog from "./pages/Blog";
 import Layout from "./pages/Admin/Layout";
 import Dashboard from "./pages/Admin/Dashboard";
-import AddBlog from "./pages/Admin/AddBlog";
+import AddBlog from "./pages/AddBlog";
 import Comments from "./pages/Admin/Comments";
 import ListBlog from "./pages/Admin/ListBlog";
 import Login from "./pages/Login";
