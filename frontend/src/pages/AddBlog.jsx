@@ -175,6 +175,7 @@ const AddBlog = () => {
     } catch (err) {
       console.error("submitHandler error:", err);
       setError("An unexpected error occurred");
+      console.log("submitHandler caught error");
       setIsLoading(false);
     }
   };
