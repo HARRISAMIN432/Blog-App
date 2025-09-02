@@ -60,7 +60,7 @@ const AddBlog = () => {
     } catch (err) {
       setError("Something went wrong while uploading the blog.");
     }
-    setIsLoading(true);
+    setIsLoading(false);
   };
 
   const generateContent = async () => {
