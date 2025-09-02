@@ -5,49 +5,42 @@ const imagekit = require("../config/imagekit");
 const Comment = require("../models/Comment");
 
 exports.addBlog = async (req, res, next) => {
-  console.log("meri bas hogyi hai");
-  console.log(req.body.blog);
-  const { title, subtitle, description, category, isPublished, user } =
-    JSON.parse(req.body.blog);
-  console.log(req.body.blog);
-  const imageFile = req.file;
-  if (!title || !description || !category || !imageFile)
-    return next(new ErrorHandler("Please fill all fields", 400));
-  const fileBuffer = fs.readFileSync(imageFile.path);
-  const imagekitResponse = await imagekit.upload({
-    file: fileBuffer,
-    fileName: imageFile.originalname,
-    folder: "/blogs",
-  });
-  const image = imagekitResponse.url;
-  let blog = false;
-  if (!user) {
-    blog = await Blog.create({
-      title,
-      subtitle,
-      description,
-      category,
-      image,
-      isPublished: isPublished === true,
+  try {
+    const { title, subtitle, description, category, isPublished, user } =
+      JSON.parse(req.body.blog);
+    const imageFile = req.file;
+    if (!title || !description || !category || !imageFile) {
+      return next(new ErrorHandler("Please fill all fields", 400));
+    }
+    const imagekitResponse = await imagekit.upload({
+      file: fs.createReadStream(imageFile.path), // use stream instead of readFileSync
+      fileName: imageFile.originalname,
+      folder: "/blogs",
     });
-  } else {
-    blog = await Blog.create({
+
+    const image = imagekitResponse.url;
+    let blog = await Blog.create({
       title,
       subtitle,
       description,
       category,
       image,
-      user,
+      user: user || undefined,
       isPublished: isPublished === true || isPublished === "true",
     });
+    if (!blog) {
+      return next(new ErrorHandler("Blog creation failed", 500));
+    }
+    fs.unlinkSync(imageFile.path);
+    res.status(201).json({
+      success: true,
+      message: "Blog added successfully",
+      blog,
+    });
+  } catch (error) {
+    next(error);
   }
-  if (!blog) return next(new ErrorHandler("Blog creation failed", 500));
-  res.status(201).json({
-    success: true,
-    message: "Blog added successfully",
-  });
 };
-
 exports.getAllBlogs = async (req, res, next) => {
   const blogs = await Blog.find();
   if (!blogs) return next(new ErrorHandler("No blogs found", 404));
